@@ -1,0 +1,37 @@
+# Binaries for programs and plugins
+/target
+
+# If you have Cargo.lock in your repository, ignore this:
+/Cargo.lock
+
+# Build artifacts
+/target
+
+# Output of cargo doc
+/target/doc
+
+# Unnecessary personal files
+/.vscode
+/.idea
+.DS_Store
+Thumbs.db
+
+# Environment variables
+/.env
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Generated data files
+*.csv
+*.json
+
+# Other lock files
+*.lock
+
+# Backups
+*~
