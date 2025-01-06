@@ -1,83 +1,48 @@
+use crate::device_message::DeviceMessage;
+use rumqttc::Publish;
 use std::str;
-use tokio::sync::mpsc::{self, Receiver, Sender};
-
-#[derive(Debug)]
-pub struct DeviceMessage {
-    device_id: String,
-    payload: Vec<u8>,
-}
 
 #[derive(Clone)]
-pub struct DeviceMessageHandler {
-    data_sender: Sender<DeviceMessage>,
-    status_sender: Sender<DeviceMessage>,
-}
+pub struct MessageHandler;
 
-impl DeviceMessageHandler {
-    pub fn new() -> (Self, (Receiver<DeviceMessage>, Receiver<DeviceMessage>)) {
-        let (data_sender, data_receiver) = mpsc::channel(100);
-        let (status_sender, status_receiver) = mpsc::channel(100);
-
-        (
-            DeviceMessageHandler {
-                data_sender,
-                status_sender,
-            },
-            (data_receiver, status_receiver),
-        )
+impl MessageHandler {
+    pub fn new() -> Self {
+        MessageHandler
     }
 
-    // 分發消息到對應的佇列
-    pub async fn dispatch_message(&self, topic: &str, payload: &[u8]) {
-        let parts: Vec<&str> = topic.split('/').collect();
+    pub async fn handle_message(&self, publish: Publish) {
+        let topic = publish.topic;
+        let payload = publish.payload.to_vec();
 
-        if parts.len() < 3 {
-            println!("Invalid topic format: {}", topic);
-            return;
+        if let Some(message) = DeviceMessage::new(&topic, &payload) {
+            println!(
+                "[INFO] Message received - Type: {}, MAC: {}, Channel: {}",
+                message.device_type, message.mac_id, message.channel
+            );
+            self.process_message(message).await;
         }
+    }
 
-        let message = DeviceMessage {
-            device_id: parts[1].to_string(),
-            payload: payload.to_vec(),
-        };
-
-        match (parts[0], parts[2]) {
-            ("DM", "1") => {
-                if let Err(e) = self.data_sender.send(message).await {
-                    println!("Failed to send data message: {}", e);
+    async fn process_message(&self, message: DeviceMessage) {
+        match message.channel.as_str() {
+            "0" => {
+                match str::from_utf8(&message.payload) {
+                    Ok(text) => println!("[INFO] Message content: {}", text),
+                    Err(_) => eprintln!("[ERROR] Invalid UTF-8 sequence in payload"),
                 }
             }
-            ("DM", "0") => {
-                if let Err(e) = self.status_sender.send(message).await {
-                    println!("Failed to send status message: {}", e);
+            "1" => {
+                match str::from_utf8(&message.payload) {
+                    Ok(text) => println!("[DATA] Message content: {}", text),
+                    Err(_) => eprintln!("[ERROR] Invalid UTF-8 sequence in payload"),
                 }
             }
             _ => {
-                println!("Unknown message format:");
-                println!("Topic: {}", topic);
-                Self::print_message_content(payload, "Content");
+                eprintln!(
+                    "[ERROR] Unsupported message type - Type: {}, Channel: {}",
+                    message.device_type, message.channel
+                );
             }
-        }
-    }
-    
-    // 處理數據消息
-    pub async fn handle_data_message(message: DeviceMessage) {
-        println!("Device Data Message from device: {}", message.device_id);
-        Self::print_message_content(&message.payload, "Data");
-        // 這裡可以添加具體的數據處理邏輯
-    }
-
-    // 處理狀態消息
-    pub async fn handle_status_message(message: DeviceMessage) {
-        println!("Device Status Message from device: {}", message.device_id);
-        Self::print_message_content(&message.payload, "Status");
-        // 這裡可以添加具體的狀態處理邏輯
-    }
-
-    fn print_message_content(payload: &[u8], prefix: &str) {
-        match String::from_utf8(payload.to_vec()) {
-            Ok(message) => println!("{}: {}", prefix, message),
-            Err(_) => println!("Binary {}, length: {} bytes", prefix.to_lowercase(), payload.len()),
         }
     }
 }
