@@ -7,7 +7,7 @@ use std::time::Duration;
 
 #[tokio::main]
 async fn main() {
-    let mut mqttoptions = MqttOptions::new("test1", "60.250.246.123", 1883);
+    let mut mqttoptions = MqttOptions::new("edge_server", "60.250.246.123", 1883);
     mqttoptions.set_keep_alive(Duration::from_secs(10));
     mqttoptions.set_credentials("dolomannaiot", "q03KHNrJG0wC");
 
