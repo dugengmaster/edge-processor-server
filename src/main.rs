@@ -1,5 +1,10 @@
-pub mod device_message;
+pub mod device_message_controller;
 pub mod device_message_handler;
+pub mod gateway_modbus_device;
+pub mod device_model;
+pub mod message_processor;
+pub mod message;
+
 
 use device_message_handler::MessageHandler;
 use rumqttc::{AsyncClient, Event, MqttOptions, Packet, QoS};
