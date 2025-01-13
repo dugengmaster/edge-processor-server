@@ -1,4 +1,5 @@
 use crate::device_message_controller::DeviceMessageController;
+use crate::message_processor::message_parser::MessageParser;
 use rumqttc::Publish;
 
 #[derive(Clone)]
@@ -13,11 +14,13 @@ impl MessageHandler {
         let topic = publish.topic;
         let payload = publish.payload.to_vec();
 
-        if let Some(message) = DeviceMessageController::new(topic, payload) {
-            println!(
-                "[INFO] Message received - Type: {}, MAC: {}, Channel: {}",
-                message.device_type, message.mac_id, message.channel
-            );
-        }
+        // parser = MessageParser
+
+        // if let Some(message) = MessageParser::new(topic, payload) {
+        //     println!(
+        //         "[INFO] Message received - Type: {}, MAC: {}, Channel: {}",
+        //         message.device_type, message.mac_id, message.channel
+        //     );
+        // }
     }
 }
