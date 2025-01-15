@@ -1,34 +1,28 @@
-pub struct Topic<'a> {
-    pub device_type: &'a str,
-    pub mac_id: &'a str,
-    pub channel: &'a str,
+use super::super::message::Topic;
+
+pub struct TopicParser {
+    topic: Option<Topic>,
 }
 
-pub struct TopicParser<'a> {
-    topic: Option<Topic<'a>>,
-}
-
-impl<'a> TopicParser<'a> {
+impl<'a> TopicParser {
     pub fn new() -> Self {
         TopicParser { topic: None }
     }
-    pub fn parse(topic: &'a str) -> Option<Self> {
+    pub fn parse(&self, topic: &'a str) -> Option<Topic> {
         let mut parts = topic.split('/');
 
-        let device_type: &str = parts.next()?;
-        let mac_id: &str = parts.next()?;
-        let channel: &str = parts.next()?;
+        let device_type= parts.next()?.to_string();
+        let mac_id= parts.next()?.to_string();
+        let channel= parts.next()?.to_string();
 
-        Some(TopicParser {
-            topic: Some(Topic {
-                device_type,
-                mac_id,
-                channel,
-            }),
+        Some(Topic {
+            device_type,
+            mac_id,
+            channel,
         })
     }
 
-    pub fn get_topic(&self) -> Option<&Topic<'a>> {
-        self.topic.as_ref()
+    pub fn get_topic(&self) -> Option<Topic> {
+        self.topic.clone()
     }
 }
