@@ -1,6 +1,5 @@
 use crate::device_model::DeviceModel;
 
-
 #[derive(Debug, Clone)]
 pub struct DeviceMessageController {
     pub device_type: String,
@@ -28,10 +27,6 @@ impl DeviceMessageController {
         }
         is_device_register
     }
-
-    // pub fn validate_modbus_device_connection(&self) -> bool {
-    //     let is_modbus_device_connected = match self.
-    // }
 
     fn parse(topic: String, payload: Vec<u8>) -> Option<Self> {
         let parts: Vec<&str> = topic.split('/').collect();
