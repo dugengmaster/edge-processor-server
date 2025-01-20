@@ -5,8 +5,10 @@ edition = "2021"
 
 [dependencies]
 rumqttc = "0.24.0"
-tokio = { version = "1.42.0", features = ["full"] }
+tokio = { version = "1.43.0", features = ["full"] }
 serde = { version = "1.0.217", features = ["derive"] }
-serde_json = "1.0.135"
+serde_json = "1.0.136"
 queues = "1.1.0"
 redis = { version = "0.28.1", features = ["tokio-comp"]}
+bytes = "1.9.0"
+thiserror = "2.0.11"

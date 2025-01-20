@@ -1,28 +1,45 @@
-use std::collections::HashMap;
+use bytes::Bytes;
+use rumqttc::Publish;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use std::collections::HashMap;
 
-pub struct Message<C> where C: Channel {
+pub struct RawMessage {
+    pub topic: String,
+    pub payload: Bytes,
+}
+
+impl From<Publish> for RawMessage {
+    fn from(publish: Publish) -> Self {
+        RawMessage {
+            topic: publish.topic,
+            payload: publish.payload,
+        }
+    }
+}
+
+pub struct Message<C>
+where
+    C: Channel,
+{
     pub topic: Option<Topic>,
     pub payload: Option<C>,
 }
 
-impl<C: Channel> Message<C>{
+impl<C: Channel> Message<C> {
     pub fn new() -> Self {
         Message {
             topic: None,
             payload: None,
         }
     }
-    pub fn set_topic(mut self, topic: Topic) {
+    pub fn set_topic(mut self, topic: Topic) -> Self {
         self.topic = Some(topic);
+        self
     }
-    pub fn set_payload(mut self, payload: C) {
+    pub fn set_payload(mut self, payload: C) -> Self {
         self.payload = Some(payload);
-    }
-
-    fn message_channel(&self) -> Option<&str> {
-        self.topic.as_ref().map(|t| t.channel.as_str())
+        self
     }
 }
 
@@ -110,4 +127,4 @@ impl Channel for OTAPayload {
     }
 }
 
-type MqttMessage = crate::message_processor::message::Message<dyn Channel>;
+// type MqttMessage = crate::message_processor::message::Message<dyn Channel>;

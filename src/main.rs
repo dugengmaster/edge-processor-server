@@ -1,12 +1,13 @@
-pub mod device_message_controller;
-pub mod device_message_handler;
-pub mod gateway_modbus_device;
-pub mod device_model;
-pub mod message_processor;
+mod device_message_controller;
+mod device_message_handler;
+mod device_model;
+mod gateway_modbus_device;
+mod message_processor;
 
 use device_message_handler::MessageHandler;
 use rumqttc::{AsyncClient, Event, MqttOptions, Packet, QoS};
 use std::time::Duration;
+use message_processor::message::RawMessage;
 
 #[tokio::main]
 async fn main() {
@@ -25,7 +26,8 @@ async fn main() {
                 if let Event::Incoming(Packet::Publish(publish)) = notification {
                     let handler = handler.clone();
                     tokio::task::spawn(async move {
-                        handler.handle_message(publish).await;
+                        let raw_message = RawMessage::from(publish);
+                        handler.handle_message(raw_message).await;
                     });
                 }
             }

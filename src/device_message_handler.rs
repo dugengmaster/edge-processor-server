@@ -1,6 +1,8 @@
-use crate::device_message_controller::DeviceMessageController;
-use crate::message_processor::message_parser::MessageParser;
-use rumqttc::Publish;
+// use crate::device_message_controller::DeviceMessageController;
+// use crate::message_processor::message_parser::MessageParser;
+// mod message_processor;
+
+use crate::{RawMessage, message_processor::message_processor};
 
 #[derive(Clone)]
 pub struct MessageHandler;
@@ -10,9 +12,10 @@ impl MessageHandler {
         MessageHandler
     }
 
-    pub async fn handle_message(&self, publish: Publish) {
-        let topic = publish.topic;
-        let payload = publish.payload.to_vec();
+    pub async fn handle_message(&self, raw_message: RawMessage) {
+        message_processor(raw_message);
+        // let topic = raw_message.topic;
+        // let payload = raw_message.payload;
 
         // parser = MessageParser
 
