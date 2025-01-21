@@ -13,7 +13,7 @@ impl MessageHandler {
     }
 
     pub async fn handle_message(&self, raw_message: RawMessage) {
-        message_processor(raw_message);
+        let message = message_processor(raw_message);
         // let topic = raw_message.topic;
         // let payload = raw_message.payload;
 
