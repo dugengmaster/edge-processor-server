@@ -1,8 +1,8 @@
 // use crate::device_message_controller::DeviceMessageController;
-// use crate::message_processor::message_parser::MessageParser;
-// mod message_processor;
+// use crate::message_processor::MessageProcessor;
+mod message_processor;
 
-use crate::{RawMessage, message_processor::message_processor};
+use crate::{RawMessage, message_processor::MessageProcessor};
 
 #[derive(Clone)]
 pub struct MessageHandler;
@@ -13,7 +13,9 @@ impl MessageHandler {
     }
 
     pub async fn handle_message(&self, raw_message: RawMessage) {
-        let message = message_processor(raw_message);
+        let message = MessageProcessor::message_processor(raw_message);
+        println!("[INFO] Message received - Type: {}, MAC: {}, Channel: {}", message.topic.device_type, message.topic.mac_id, message.topic.channel);
+        
         // let topic = raw_message.topic;
         // let payload = raw_message.payload;
 

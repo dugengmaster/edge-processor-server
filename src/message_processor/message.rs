@@ -9,6 +9,7 @@ pub struct RawMessage {
     pub payload: Bytes,
 }
 
+// Implements a conversion from rumqttc's Publish to RawMessage.
 impl From<Publish> for RawMessage {
     fn from(publish: Publish) -> Self {
         RawMessage {
@@ -20,26 +21,15 @@ impl From<Publish> for RawMessage {
 
 pub struct Message<C>
 where
-    C: Channel,
+    C: Channel + ?Sized,
 {
-    pub topic: Option<Topic>,
-    pub payload: Option<C>,
+    pub topic: Topic,
+    pub payload: Box<C>,
 }
 
-impl<C: Channel> Message<C> {
-    pub fn new() -> Self {
-        Message {
-            topic: None,
-            payload: None,
-        }
-    }
-    pub fn set_topic(mut self, topic: Topic) -> Self {
-        self.topic = Some(topic);
-        self
-    }
-    pub fn set_payload(mut self, payload: C) -> Self {
-        self.payload = Some(payload);
-        self
+impl<C: Channel + ?Sized> Message<C> {
+    pub fn new(topic: Topic, payload: Box<C>) -> Self {
+        Message { topic, payload }
     }
 }
 
@@ -50,9 +40,7 @@ pub struct Topic {
     pub channel: String,
 }
 
-pub trait Channel {
-    fn target_channel(&self) -> &'static str;
-}
+pub trait Channel {}
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct DeviceInfo {
@@ -84,11 +72,17 @@ pub struct DataPayload {
     pub data: HashMap<String, Value>,
 }
 
-impl Channel for DataPayload {
-    fn target_channel(&self) -> &'static str {
-        "1"
-    }
+impl Channel for DataPayload {}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct DataPayloadNow {
+    pub slaveID: u8,
+    pub model: String,
+    pub timestamp: String,
+    pub data: HashMap<String, Value>,
 }
+
+impl Channel for DataPayloadNow {}
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct StatusPayload {
@@ -121,10 +115,13 @@ pub struct OTAPayload {
     pub ota_info: OTAInfo,
 }
 
-impl Channel for OTAPayload {
-    fn target_channel(&self) -> &'static str {
-        "0"
-    }
+impl Channel for OTAPayload {}
+
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct OTAPayloadNow {
+    pub base: BasePayload,
+    pub ota_info: OTAInfo,
 }
 
-// type MqttMessage = crate::message_processor::message::Message<dyn Channel>;
+impl Channel for OTAPayloadNow {}

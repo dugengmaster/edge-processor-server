@@ -1,4 +1,5 @@
-use super::message::Topic;
+use super::message::{Channel, DataPayloadNow, OTAPayload, Topic};
+use serde::Deserialize;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -9,9 +10,30 @@ pub enum ParseError {
     MissingPart(String),
 }
 
+#[derive(Debug)]
+pub enum ChannelType {
+    Data,
+    Ota,
+}
+
+impl ChannelType {
+    pub fn check_channel(channel: &str) -> Result<Self, ParseError> {
+        match channel {
+            "0" => Ok(ChannelType::Data),
+            "1" => Ok(ChannelType::Ota),
+            _ => Err(ParseError::InvalidFormat("Invalid channel format".to_string())),
+        }
+    }
+}
+
 pub struct Parser;
 
 impl Parser {
+    fn from_slice<'a, T: Deserialize<'a>>(payload: &'a [u8]) -> Result<T, ParseError> {
+        serde_json::from_slice(payload)
+            .map_err(|e| ParseError::InvalidFormat(format!("Invalid payload format: {}", e)))
+    }
+
     pub fn parse_topic(topic: String) -> Result<Topic, ParseError> {
         let mut parts = topic.split("/");
 
@@ -37,5 +59,23 @@ impl Parser {
             mac_id,
             channel,
         })
+    }
+
+    pub fn parse_payload(
+        channel: &str,
+        payload: bytes::Bytes,
+    ) -> Result<Box<dyn Channel>, ParseError> {
+        let v8_payload = &payload.to_vec();
+
+        match ChannelType::check_channel(channel)? {
+            ChannelType::Data => {
+                let data_payload: DataPayloadNow = Self::from_slice(v8_payload)?;
+                Ok(Box::new(data_payload))
+            }
+            ChannelType::Ota => {
+                let ota_payload: OTAPayload = Self::from_slice(v8_payload)?;
+                Ok(Box::new(ota_payload))
+            }
+        }
     }
 }

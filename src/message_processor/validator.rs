@@ -4,7 +4,7 @@ use crate::device_model::DeviceModel;
 pub struct Validator;
 
 impl Validator {
-    pub fn validate_register_device(topic: Topic) -> bool {
+    pub fn validate_register_device(topic: &Topic) -> bool {
         let is_device_register = match topic.device_type.as_str() {
             "DM" => DeviceModel::new().get_gateway_by_macid(&topic.mac_id).is_some(),
             _ => false,

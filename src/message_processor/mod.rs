@@ -1,48 +1,39 @@
 pub mod message;
-pub mod parser;
-pub mod validator;
+mod parser;
+mod validator;
 
-use serde_json::json;
-use std::collections::HashMap;
+use message::{
+    Channel, Message, RawMessage, Topic,
+};
+use parser::{ParseError, Parser};
+use validator::Validator;
 
-use message::{BasePayload, DataPayload, DeviceInfo, Message, RawMessage, Topic};
-pub use parser::Parser;
-// pub use validator::Validator;
+pub struct MessageProcessor;
 
-fn generate_test_message() -> Message<DataPayload> {
-    let device_info = DeviceInfo {
-        device_type: "sensor".to_string(),
-        brand: "Acme".to_string(),
-        model: "ModelX".to_string(),
-    };
+impl MessageProcessor {
+    fn topic_processor(raw_message_topic: String) -> Result<Topic, ParseError> {
+        Parser::parse_topic(raw_message_topic.clone()).and_then(|topic| {
+            if Validator::validate_register_device(&topic) {
+                Ok(topic)
+            } else {
+                Err(ParseError::InvalidFormat(
+                    ("Invalid topic format: ".to_string() + &raw_message_topic).to_string(),
+                ))
+            }
+        })
+    }
 
-    let base_payload = BasePayload {
-        slave_id: 1,
-        device_info,
-        timestamp: 1678886400,
-    };
+    fn payload_processor<'a>(
+        channel: &str,
+        raw_message_payload: bytes::Bytes,
+    ) -> Result<Box<dyn Channel + 'a>, ParseError> {
+        Parser::parse_payload(channel, raw_message_payload)
+    }
 
-    let mut data = HashMap::new();
-    data.insert("temperature".to_string(), json!(25.5));
-    data.insert("humidity".to_string(), json!(60.2));
-
-    let topic = Topic {
-        device_type: "sensor".to_string(),
-        mac_id: "00:11:22:33:44:55".to_string(),
-        channel: "data".to_string(),
-    };
-
-    let data_payload = DataPayload {
-        base: base_payload,
-        data,
-    };
-
-    Message::new().set_topic(topic).set_payload(data_payload)
-}
-
-pub fn message_processor(raw_message: RawMessage) -> Message<DataPayload> {
-    println!("message_processor");
-    if let topic = Parser::parse_topic(raw_message.topic) {}
-
-    generate_test_message()
+    pub fn message_processor<'a>(raw_message: RawMessage) -> Message<dyn Channel + 'a> {
+        println!("message_processor");
+        let topic = Self::topic_processor(raw_message.topic).unwrap();
+        let payload = Self::payload_processor(&topic.channel, raw_message.payload).unwrap();
+        Message::new(topic, payload) as Message<dyn Channel + 'a>
+    }
 }
