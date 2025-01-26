@@ -1,4 +1,3 @@
-mod device_message_controller;
 mod device_message_handler;
 mod device_model;
 mod gateway_modbus_device;

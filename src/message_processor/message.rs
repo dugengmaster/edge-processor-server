@@ -3,6 +3,7 @@ use rumqttc::Publish;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::HashMap;
+use std::fmt::Debug;
 
 pub struct RawMessage {
     pub topic: String,
@@ -40,7 +41,7 @@ pub struct Topic {
     pub channel: String,
 }
 
-pub trait Channel {}
+pub trait Channel: Debug {}
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct DeviceInfo {

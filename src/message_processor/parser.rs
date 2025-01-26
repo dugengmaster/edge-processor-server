@@ -19,8 +19,8 @@ pub enum ChannelType {
 impl ChannelType {
     pub fn check_channel(channel: &str) -> Result<Self, ParseError> {
         match channel {
-            "0" => Ok(ChannelType::Data),
-            "1" => Ok(ChannelType::Ota),
+            "0" => Ok(ChannelType::Ota),
+            "1" => Ok(ChannelType::Data),
             _ => Err(ParseError::InvalidFormat("Invalid channel format".to_string())),
         }
     }
