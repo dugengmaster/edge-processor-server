@@ -1,9 +1,9 @@
-mod device_message_handler;
+mod message_handler;
 mod device_model;
 mod gateway_modbus_device;
 mod message_processor;
 
-use device_message_handler::MessageHandler;
+use message_handler::MessageHandler;
 use rumqttc::{AsyncClient, Event, MqttOptions, Packet, QoS};
 use std::time::Duration;
 use message_processor::message::RawMessage;

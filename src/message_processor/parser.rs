@@ -21,7 +21,9 @@ impl ChannelType {
         match channel {
             "0" => Ok(ChannelType::Ota),
             "1" => Ok(ChannelType::Data),
-            _ => Err(ParseError::InvalidFormat("Invalid channel format".to_string())),
+            _ => Err(ParseError::InvalidFormat(
+                "Invalid channel format".to_string(),
+            )),
         }
     }
 }
@@ -29,11 +31,6 @@ impl ChannelType {
 pub struct Parser;
 
 impl Parser {
-    fn from_slice<'a, T: Deserialize<'a>>(payload: &'a [u8]) -> Result<T, ParseError> {
-        serde_json::from_slice(payload)
-            .map_err(|e| ParseError::InvalidFormat(format!("Invalid payload format: {}", e)))
-    }
-
     pub fn parse_topic(topic: String) -> Result<Topic, ParseError> {
         let mut parts = topic.split("/");
 
@@ -63,17 +60,22 @@ impl Parser {
 
     pub fn parse_payload(
         channel: &str,
-        payload: bytes::Bytes,
+        raw_payload: bytes::Bytes,
     ) -> Result<Box<dyn Channel>, ParseError> {
-        let v8_payload = &payload.to_vec();
+        fn from_slice<'a, T: Deserialize<'a>>(payload: &'a [u8]) -> Result<T, ParseError> {
+            serde_json::from_slice(payload)
+                .map_err(|e| ParseError::InvalidFormat(format!("Invalid payload format: {}", e)))
+        }
+
+        let v8_payload = &raw_payload.to_vec();
 
         match ChannelType::check_channel(channel)? {
             ChannelType::Data => {
-                let data_payload: DataPayloadNow = Self::from_slice(v8_payload)?;
+                let data_payload: DataPayloadNow = from_slice(v8_payload)?;
                 Ok(Box::new(data_payload))
             }
             ChannelType::Ota => {
-                let ota_payload: OTAPayload = Self::from_slice(v8_payload)?;
+                let ota_payload: OTAPayload = from_slice(v8_payload)?;
                 Ok(Box::new(ota_payload))
             }
         }

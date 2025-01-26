@@ -1,5 +1,3 @@
-mod message_processor;
-
 use crate::{RawMessage, message_processor::MessageProcessor};
 
 #[derive(Clone)]
