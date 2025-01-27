@@ -1,4 +1,4 @@
-use super::message::{Channel, DataPayloadNow, OTAPayload, Topic};
+use super::message::{PayloadType, DataPayloadNow, OTAPayload, Topic};
 use serde::Deserialize;
 use thiserror::Error;
 
@@ -61,7 +61,7 @@ impl Parser {
     pub fn parse_payload(
         channel: &str,
         raw_payload: bytes::Bytes,
-    ) -> Result<Box<dyn Channel>, ParseError> {
+    ) -> Result<Box<dyn PayloadType>, ParseError> {
         fn from_slice<'a, T: Deserialize<'a>>(payload: &'a [u8]) -> Result<T, ParseError> {
             serde_json::from_slice(payload)
                 .map_err(|e| ParseError::InvalidFormat(format!("Invalid payload format: {}", e)))

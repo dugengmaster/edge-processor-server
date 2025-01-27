@@ -1,4 +1,4 @@
-use crate::{RawMessage, message_processor::MessageProcessor};
+use super::message_processor::{message::RawMessage, MessageProcessor};
 
 #[derive(Clone)]
 pub struct MessageHandler;

@@ -1,4 +1,4 @@
-use crate::gateway_modbus_device::*;
+use crate::v0::gateway_modbus_device::*;
 
 pub struct DeviceModel {
     database: MockDatabase,

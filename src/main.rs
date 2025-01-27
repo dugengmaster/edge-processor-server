@@ -1,12 +1,9 @@
-mod message_handler;
-mod device_model;
-mod gateway_modbus_device;
-mod message_processor;
+mod v0;
 
-use message_handler::MessageHandler;
 use rumqttc::{AsyncClient, Event, MqttOptions, Packet, QoS};
 use std::time::Duration;
-use message_processor::message::RawMessage;
+use v0::message_handler::MessageHandler;
+use v0::message_processor::message::RawMessage;
 
 #[tokio::main]
 async fn main() {

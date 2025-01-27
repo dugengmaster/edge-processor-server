@@ -22,13 +22,13 @@ impl From<Publish> for RawMessage {
 
 pub struct Message<C>
 where
-    C: Channel + ?Sized,
+    C: PayloadType + ?Sized,
 {
     pub topic: Topic,
     pub payload: Box<C>,
 }
 
-impl<C: Channel + ?Sized> Message<C> {
+impl<C: PayloadType + ?Sized> Message<C> {
     pub fn new(topic: Topic, payload: Box<C>) -> Self {
         Message { topic, payload }
     }
@@ -41,7 +41,7 @@ pub struct Topic {
     pub channel: String,
 }
 
-pub trait Channel: Debug {}
+pub trait PayloadType: Debug {}
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct DeviceInfo {
@@ -73,17 +73,7 @@ pub struct DataPayload {
     pub data: HashMap<String, Value>,
 }
 
-impl Channel for DataPayload {}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct DataPayloadNow {
-    pub slaveID: u8,
-    pub model: String,
-    pub timestamp: String,
-    pub data: HashMap<String, Value>,
-}
-
-impl Channel for DataPayloadNow {}
+impl PayloadType for DataPayload {}
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct StatusPayload {
@@ -116,13 +106,4 @@ pub struct OTAPayload {
     pub ota_info: OTAInfo,
 }
 
-impl Channel for OTAPayload {}
-
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct OTAPayloadNow {
-    pub base: BasePayload,
-    pub ota_info: OTAInfo,
-}
-
-impl Channel for OTAPayloadNow {}
+impl PayloadType for OTAPayload {}

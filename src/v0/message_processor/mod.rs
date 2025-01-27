@@ -3,7 +3,7 @@ mod parser;
 mod validator;
 
 use message::{
-    Channel, Message, RawMessage, Topic,
+    PayloadType, Message, RawMessage, Topic,
 };
 use parser::{ParseError, Parser};
 use validator::Validator;
@@ -26,14 +26,14 @@ impl MessageProcessor {
     fn payload_processor<'a>(
         channel: &str,
         raw_message_payload: bytes::Bytes,
-    ) -> Result<Box<dyn Channel + 'a>, ParseError> {
+    ) -> Result<Box<dyn PayloadType + 'a>, ParseError> {
         Parser::parse_payload(channel, raw_message_payload)
     }
 
-    pub fn message_processor<'a>(raw_message: RawMessage) -> Message<dyn Channel + 'a> {
+    pub fn message_processor<'a>(raw_message: RawMessage) -> Message<dyn PayloadType + 'a> {
         println!("message_processor");
         let topic = Self::topic_processor(raw_message.topic).unwrap();
         let payload = Self::payload_processor(&topic.channel, raw_message.payload).unwrap();
-        Message::new(topic, payload) as Message<dyn Channel + 'a>
+        Message::new(topic, payload) as Message<dyn PayloadType + 'a>
     }
 }
