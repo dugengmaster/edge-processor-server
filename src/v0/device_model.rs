@@ -3,7 +3,7 @@ use crate::v0::gateway_modbus_device::*;
 pub struct DeviceModel {
     database: MockDatabase,
 }
-
+#[allow(dead_code)]
 impl DeviceModel {
     pub fn new() -> Self {
         DeviceModel {

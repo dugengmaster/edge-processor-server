@@ -1,22 +1,23 @@
 // 模擬資料庫結構
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct Gateway {
     pub gateway_id: u32,
     pub gateway_macid: String,
 }
-
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct Brand {
     pub brand_id: u32,
     pub brand_name: String,
 }
-
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct DeviceType {
     pub device_type_id: u32,
     pub device_type_name: String,
 }
-
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct Model {
     pub model_id: u32,
@@ -24,7 +25,7 @@ pub struct Model {
     pub brand_id: u32,
     pub device_type_id: u32,
 }
-
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct DeviceInfo {
     pub index: u32,
@@ -32,7 +33,7 @@ pub struct DeviceInfo {
     pub slaveid: u8,
     pub model_id: u32,
 }
-
+#[allow(dead_code)]
 pub struct MockDatabase {
     pub gateways: Vec<Gateway>,
     pub brands: Vec<Brand>,
@@ -40,7 +41,7 @@ pub struct MockDatabase {
     pub models: Vec<Model>,
     pub data: Vec<DeviceInfo>,
 }
-
+#[allow(dead_code)]
 impl MockDatabase {
     pub fn new() -> Self {
         let gateways = vec![
@@ -248,90 +249,5 @@ impl MockDatabase {
             }
         }
         false
-    }
-}
-
-// 驗證函數
-pub fn validate_modbus_connection(
-    mac_id: &str,
-    slave_id: u8,
-    device_identifier: &str,
-    database: &MockDatabase,
-) -> bool {
-    let parts: Vec<&str> = device_identifier.split('/').collect();
-    if parts.len() == 3 {
-        let brand = parts[0];
-        let device_type = parts[1];
-        let model = parts[2];
-        database.get_device_info(mac_id, slave_id, brand, device_type, model)
-    } else {
-        false
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_validate_modbus_connection() {
-        let db = MockDatabase::new();
-        assert_eq!(
-            validate_modbus_connection(
-                "8CAAB5537EF2",
-                1,
-                "HITACHI/AirCompressor/OSP-37M6AN2",
-                &db
-            ),
-            true
-        );
-        assert_eq!(
-            validate_modbus_connection(
-                "C8C9A3583898",
-                1,
-                "HITACHI/AirCompressor/OSP-37VAG1",
-                &db
-            ),
-            true
-        );
-        assert_eq!(
-            validate_modbus_connection("483FDA578E98", 5, "COMATE/MassFlowMeter/TGF200", &db),
-            true
-        );
-        assert_eq!(
-            validate_modbus_connection("483FDA578E98", 1, "JAGUAR/AirCompressor/ZLS-20Hi+3", &db),
-            true
-        );
-        assert_eq!(
-            validate_modbus_connection("BCFF4DCFDCEA", 1, "PARKER/CompressedAirDryers/LM-YED", &db),
-            true
-        );
-        assert_eq!(
-            validate_modbus_connection(
-                "A020A624F3E0",
-                1,
-                "HITACHI/AirCompressor/OSP-37M6AN2",
-                &db
-            ),
-            true
-        );
-        assert_eq!(
-            validate_modbus_connection(
-                "8CAAB5537EF2",
-                2,
-                "HITACHI/AirCompressor/OSP-37M6AN2",
-                &db
-            ),
-            false
-        );
-        assert_eq!(
-            validate_modbus_connection(
-                "483FDA578E98",
-                1,
-                "HITACHI/AirCompressor/OSP-37M6AN2",
-                &db
-            ),
-            false
-        );
     }
 }

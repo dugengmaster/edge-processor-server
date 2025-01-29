@@ -1,37 +1,22 @@
 mod v0;
 
-use rumqttc::{AsyncClient, Event, MqttOptions, Packet, QoS};
-use std::time::Duration;
 use v0::message_handler::MessageHandler;
-use v0::message_processor::message::RawMessage;
+use v0::mqtt_client::{rumqtt_client::RumqttClient, MqttClient, MqttOptions};
 
 #[tokio::main]
 async fn main() {
-    let mut mqttoptions = MqttOptions::new("edge_server", "60.250.246.123", 1883);
-    mqttoptions.set_keep_alive(Duration::from_secs(10));
+    let mut mqttoptions = MqttOptions::new("60.250.246.123", 1883);
     mqttoptions.set_credentials("dolomannaiot", "q03KHNrJG0wC");
+    
+    let message_handler = MessageHandler::new();
+    let mut mqtt_client = RumqttClient::new(mqttoptions);
+    
+    mqtt_client.subscribe("DM/#").await;
 
-    let (client, mut eventloop) = AsyncClient::new(mqttoptions, 10);
-    client.subscribe("DM/#", QoS::AtMostOnce).await.unwrap();
-
-    let handler = MessageHandler::new();
-
-    loop {
-        match eventloop.poll().await {
-            Ok(notification) => {
-                if let Event::Incoming(Packet::Publish(publish)) = notification {
-                    let handler = handler.clone();
-                    tokio::task::spawn(async move {
-                        let raw_message = RawMessage::from(publish);
-                        handler.handle_message(raw_message).await;
-                    });
-                }
-            }
-            Err(e) => {
-                println!("Error: {:?}", e);
-                break;
-            }
-        }
-        tokio::time::sleep(Duration::from_millis(10)).await;
-    }
+    mqtt_client.poll(move |raw_message| {
+        let handler = message_handler.clone();
+        tokio::spawn(async move {
+            handler.handle_message(raw_message).await;
+        });
+    }).await;
 }
