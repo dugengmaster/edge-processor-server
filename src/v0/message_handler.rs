@@ -24,7 +24,7 @@ impl MessageHandler {
             "[INFO] Message received - Type: {}, MAC: {}, Channel: {}, payload: {:?}",
             message.topic.device_type, message.topic.mac_id, message.topic.channel, message.payload
         );
-        let duration = start.elapsed(); // 計算經過時間
-        println!("[INFO] Message processing time: {:?}", duration); // 輸出處理時間
+        let duration = start.elapsed();
+        println!("[INFO] Message processing time: {:?}", duration);
     }
 }

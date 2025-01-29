@@ -65,6 +65,18 @@ impl MockDatabase {
                 gateway_id: 5,
                 gateway_macid: "BCFF4DCFDCEA".to_string(),
             },
+            Gateway {
+                gateway_id: 6,
+                gateway_macid: "D8BFC0192998".to_string(),
+            },
+            Gateway {
+                gateway_id: 7,
+                gateway_macid: "483FDA44DFAF".to_string(),
+            },
+            Gateway {
+                gateway_id: 8,
+                gateway_macid: "BCDDC2568AA4".to_string(),
+            },
         ];
 
         let brands = vec![
