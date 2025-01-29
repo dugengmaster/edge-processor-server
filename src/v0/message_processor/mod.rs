@@ -8,32 +8,43 @@ use message::{
 use parser::{ParseError, Parser};
 use validator::Validator;
 
-pub struct MessageProcessor;
+pub struct MessageProcessor {
+    parser: Parser,
+    validator: Validator,
+}
 
 impl MessageProcessor {
-    fn topic_processor(raw_message_topic: String) -> Result<Topic, ParseError> {
-        Parser::parse_topic(raw_message_topic.clone()).and_then(|topic| {
-            if Validator::validate_register_device(&topic) {
+    pub fn new() -> Self {
+        MessageProcessor {
+            parser: Parser,
+            validator: Validator::new(),
+        }
+    }
+
+    fn topic_processor(&self, raw_message_topic: &str) -> Result<Topic, ParseError> {
+        self.parser.parse_topic(raw_message_topic).and_then(|topic| {
+            if self.validator.validate_register_device(&topic) {
                 Ok(topic)
             } else {
-                Err(ParseError::InvalidFormat(
-                    ("Invalid topic format: ".to_string() + &raw_message_topic).to_string(),
-                ))
+                Err(ParseError::InvalidFormat(format!(
+                    "Invalid topic format: {}",
+                    raw_message_topic
+                )))
             }
         })
     }
 
     fn payload_processor<'a>(
+        &self, 
         channel: &str,
         raw_message_payload: bytes::Bytes,
     ) -> Result<Box<dyn PayloadType + 'a>, ParseError> {
-        Parser::parse_payload(channel, raw_message_payload)
+        self.parser.parse_payload(channel, raw_message_payload)
     }
 
-    pub fn message_processor<'a>(raw_message: RawMessage) -> Message<dyn PayloadType + 'a> {
-        println!("message_processor");
-        let topic = Self::topic_processor(raw_message.topic).unwrap();
-        let payload = Self::payload_processor(&topic.channel, raw_message.payload).unwrap();
+    pub fn message_processor<'a>(&self, raw_message: RawMessage) -> Message<dyn PayloadType + 'a> {
+        let topic = self.topic_processor(&raw_message.topic).unwrap();
+        let payload = self.payload_processor(&topic.channel, raw_message.payload).unwrap();
         Message::new(topic, payload) as Message<dyn PayloadType + 'a>
     }
 }

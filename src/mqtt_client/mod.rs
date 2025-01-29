@@ -1,5 +1,11 @@
-use super::message_processor::message::RawMessage;
+use crate::v0::message_processor::message::RawMessage;
 pub mod rumqtt_client;
+
+pub trait MqttClient {
+    fn new(mqttoptions: MqttOptions) -> Self;
+    async fn subscribe(&mut self, topic: &str);
+    async fn poll(&mut self, callback: impl Fn(RawMessage) + Send + Sync + 'static);
+}
 
 #[allow(dead_code)]
 #[derive(Clone)]
@@ -35,11 +41,11 @@ pub struct TlsOptions {
 }
 #[allow(dead_code)]
 impl MqttOptions {
-    pub fn new(server_address: &str, port: u16) -> Self {
+    pub fn new(client_id: &str, server_address: &str, port: u16) -> Self {
         MqttOptions {
             server_address: server_address.to_string(),
             port,
-            client_id: "IoT_Core".to_string(),
+            client_id: client_id.to_string(),
             keep_alive: 10,
             username: None,
             password: "".to_string(),
@@ -108,10 +114,4 @@ impl MqttOptions {
         });
         self
     }
-}
-
-pub trait MqttClient {
-    fn new(mqttoptions: MqttOptions) -> Self;
-    async fn subscribe(&mut self, topic: &str);
-    async fn poll(&mut self, callback: impl Fn(RawMessage) + Send + Sync + 'static);
 }

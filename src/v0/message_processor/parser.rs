@@ -1,4 +1,4 @@
-use super::message::{PayloadType, DataPayload, OTAPayload, Topic};
+use super::message::{DataPayload, OTAPayload, PayloadType, Topic};
 use serde::Deserialize;
 use thiserror::Error;
 
@@ -21,9 +21,7 @@ impl ChannelType {
         match channel {
             "0" => Ok(ChannelType::Ota),
             "1" => Ok(ChannelType::Data),
-            _ => Err(ParseError::InvalidFormat(
-                "Invalid channel format".to_string(),
-            )),
+            _ => Err(ParseError::InvalidFormat("Invalid channel format".to_string())),
         }
     }
 }
@@ -31,34 +29,26 @@ impl ChannelType {
 pub struct Parser;
 
 impl Parser {
-    pub fn parse_topic(topic: String) -> Result<Topic, ParseError> {
+    pub fn parse_topic(&self, topic: &str) -> Result<Topic, ParseError> {
         let mut parts = topic.split("/");
 
-        let device_type = parts
-            .next()
-            .ok_or(ParseError::MissingPart("device_type".to_string()))?
-            .to_string();
-        let mac_id = parts
-            .next()
-            .ok_or(ParseError::MissingPart("mac_id".to_string()))?
-            .to_string();
-        let channel = parts
-            .next()
-            .ok_or(ParseError::MissingPart("channel".to_string()))?
-            .to_string();
+        let device_type = parts.next().ok_or(ParseError::MissingPart("device_type".to_string()))?;
+        let mac_id = parts.next().ok_or(ParseError::MissingPart("mac_id".to_string()))?;
+        let channel = parts.next().ok_or(ParseError::MissingPart("channel".to_string()))?;
 
         if parts.next().is_some() {
-            return Err(ParseError::InvalidFormat(topic));
+            return Err(ParseError::InvalidFormat(topic.to_string()));
         }
 
         Ok(Topic {
-            device_type,
-            mac_id,
-            channel,
+            device_type: device_type.to_string(),
+            mac_id: mac_id.to_string(),
+            channel: channel.to_string(),
         })
     }
 
     pub fn parse_payload(
+        &self,
         channel: &str,
         raw_payload: bytes::Bytes,
     ) -> Result<Box<dyn PayloadType>, ParseError> {
@@ -67,7 +57,7 @@ impl Parser {
                 .map_err(|e| ParseError::InvalidFormat(format!("Invalid payload format: {}", e)))
         }
 
-        let v8_payload = &raw_payload.to_vec();
+        let v8_payload = raw_payload.as_ref();
 
         match ChannelType::check_channel(channel)? {
             ChannelType::Data => {

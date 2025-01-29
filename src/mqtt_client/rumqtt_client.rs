@@ -1,5 +1,5 @@
-use super::super::{message_processor::message::RawMessage, mqtt_client::MqttOptions};
-use super::MqttClient;
+use crate::v0::message_processor::message::RawMessage;
+use super::{MqttClient, MqttOptions};
 use rumqttc::{AsyncClient, Event, EventLoop, MqttOptions as RumqttMqttOptions, Packet, QoS};
 use std::time::Duration;
 

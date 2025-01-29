@@ -1,10 +1,18 @@
 use super::message::Topic;
 use crate::v0::device_model::DeviceModel;
 
-pub struct Validator;
+pub struct Validator {
+    device_model: DeviceModel,
+}
 
 impl Validator {
-    pub fn validate_register_device(topic: &Topic) -> bool {
+    pub fn new() -> Self {
+        Validator {
+            device_model: DeviceModel::new(),
+        }
+    }
+
+    pub fn validate_register_device(&self, topic: &Topic) -> bool {
         let is_device_register = match topic.device_type.as_str() {
             "DM" => DeviceModel::new().get_gateway_by_macid(&topic.mac_id).is_some(),
             _ => false,
