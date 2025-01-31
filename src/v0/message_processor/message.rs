@@ -20,6 +20,7 @@ impl From<Publish> for RawMessage {
     }
 }
 
+#[derive(Debug)]
 pub struct Message<C>
 where
     C: PayloadType + ?Sized,

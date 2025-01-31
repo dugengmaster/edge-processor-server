@@ -13,7 +13,7 @@ impl Validator {
     }
 
     pub fn validate_register_device(&self, topic: &Topic) -> bool {
-        let is_device_register = match topic.device_type.as_str() {
+        let is_device_register = match topic.device_type.as_ref() {
             "DM" => self.device_model.get_gateway_by_macid(&topic.mac_id).is_some(),
             _ => false,
         };

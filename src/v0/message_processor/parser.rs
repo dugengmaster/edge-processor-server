@@ -57,7 +57,7 @@ impl Parser {
                 .map_err(|e| ParseError::InvalidFormat(format!("Invalid payload format: {}", e)))
         }
 
-        let v8_payload = raw_payload.as_ref();
+        let v8_payload = &raw_payload.as_ref();
 
         match ChannelType::check_channel(channel)? {
             ChannelType::Data => {
