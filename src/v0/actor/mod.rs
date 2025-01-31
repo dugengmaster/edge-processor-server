@@ -1,50 +1,52 @@
-// mod data_actor;
-// mod ota_actor;
+use crate::v0::message_processor::message::Message as MqttMessage;
+use ractor::{Actor, ActorProcessingErr, ActorRef};
 
-// use crate::v0::message_processor::message::{DataPayload, Message as MqttMessage, OTAPayload};
-// use ractor::{Actor, ActorProcessingErr, ActorRef, Message};
+use super::message_processor::message::PayloadType;
 
-// pub enum ActorMessage {
-//     Data(MqttMessage<DataPayload>),
-//     OTA(MqttMessage<OTAPayload>),
-// }
+pub enum RouterMessage {
+    Message(MqttMessage<dyn PayloadType>),
+}
 
-// pub struct RouterActor;
+pub struct RouterActor;
 
-// impl Actor for RouterActor {
-//     type Msg = ActorMessage;
-//     type State = ();
-//     type Arguments = ();
+impl Actor for RouterActor {
+    type Msg = RouterMessage;
+    type State = ();
+    type Arguments = ();
 
-    // async fn pre_start(
-    //     &self,
-    //     _ctx: &mut Context<Self::Msg>,
-    //     _args: Self::Arguments,
-    // ) -> Result<Self::State, ractor::Error> {
-    //     Ok(())
-    // }
+    async fn pre_start(
+        &self,
+        myself: ActorRef<Self::Msg>,
+        args: Self::Arguments,
+    ) -> Result<Self::State, ActorProcessingErr> {
+        Ok(())
+    }
 
-    // async fn handle(
-    //     &self,
-    //     _ctx: &mut Context<Self::Msg>,
-    //     message: Self::Msg,
-    //     _state: &mut Self::State,
-    // ) -> Result<(), ractor::Error> {
-    //      match message.topic.channel.as_str() {
-    //                 "data" => {
-    //                      let data_actor = DataActor;
-    //                     let actor_ref = DataActor::spawn(None, data_actor, ()).await.unwrap().0;
-    //                      actor_ref.cast(ActorMessage::Data(*message.payload.downcast::<crate::v0::message_processor::message::DataPayload>().unwrap())).unwrap();
-    //                 },
-    //                "ota"=>{
-    //                     let ota_actor = OtaActor;
-    //                      let actor_ref = OtaActor::spawn(None, ota_actor, ()).await.unwrap().0;
-    //                     actor_ref.cast(ActorMessage::Ota(*message.payload.downcast::<crate::v0::message_processor::message::OTAPayload>().unwrap())).unwrap();
-    //                },
-    //                 _ => {
-    //                    println!("[ERROR] Unknown channel type: {}", message.topic.channel);
-    //                 }
-    //             }
-    //     Ok(())
-    // }
-// }
+    async fn handle(
+        &self, 
+        myself: ActorRef<Self::Msg>,
+        message: Self::Msg,
+        state: &mut Self::State,
+    ) -> Result<(), ActorProcessingErr> {
+        match message {
+            RouterMessage::Message(message) => match message.topic.channel.as_str() {
+                "1" => {
+                    println!(
+                        "[INFO] Message received - Type: {}, MAC: {}, Channel: {}, payload: {:?}",
+                        message.topic.device_type,
+                        message.topic.mac_id,
+                        message.topic.channel,
+                        message.payload
+                    );
+                }
+                "0" => {
+                    println!("[INFO] OTA message received");
+                }
+                _ => {
+                    println!("[ERROR] Unknown channel type: {}", message.topic.channel);
+                }
+            },
+        }
+        Ok(())
+    }
+}

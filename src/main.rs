@@ -2,11 +2,10 @@ mod mqtt_client;
 mod v0;
 
 use mqtt_client::{rumqtt_client::RumqttClient, MqttClient, MqttOptions};
+use ractor::actor::{self, Actor};
 use std::sync::Arc;
-use std::time::Instant;
-use ractor::actor::Actor;
 use v0::message_processor::MessageProcessor;
-// use v0::actor::DataActor;
+use v0::actor::{RouterActor, RouterMessage};
 
 #[tokio::main]
 async fn main() {
@@ -15,24 +14,17 @@ async fn main() {
 
     let mut mqtt_client = RumqttClient::new(mqttoptions);
     let message_processor = Arc::new(MessageProcessor::new());
-    // let (actor, actor_handle) = Actor::spawn(None, DataActor, ()).await.expect("Actor failed to start");
+    let (router_actor, _) = Actor::spawn(None, RouterActor, ()).await.expect("Actor failed to start");
 
     mqtt_client.subscribe("DM/#").await;
 
     mqtt_client
         .poll(move |raw_message| {
             let processor = message_processor.clone();
+            let router = router_actor.clone();
             tokio::spawn(async move {
-                // let start = Instant::now();
                 let message = processor.message_processor(raw_message);
-
-                println!(
-                    "[INFO] Message received - Type: {}, MAC: {}, Channel: {}, payload: {:?}",
-                    message.topic.device_type, message.topic.mac_id, message.topic.channel, message.payload
-                );
-
-                // let duration = start.elapsed();
-                // println!("[INFO] Message processing time: {:?}\n", duration);
+                router.cast(RouterMessage::Message(message)).unwrap();
             });
         })
         .await;

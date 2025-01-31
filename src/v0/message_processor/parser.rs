@@ -21,7 +21,9 @@ impl ChannelType {
         match channel {
             "0" => Ok(ChannelType::Ota),
             "1" => Ok(ChannelType::Data),
-            _ => Err(ParseError::InvalidFormat("Invalid channel format".to_string())),
+            _ => Err(ParseError::InvalidFormat(
+                "Invalid channel format".to_string(),
+            )),
         }
     }
 }
@@ -32,9 +34,15 @@ impl Parser {
     pub fn parse_topic(&self, topic: &str) -> Result<Topic, ParseError> {
         let mut parts = topic.split("/");
 
-        let device_type = parts.next().ok_or(ParseError::MissingPart("device_type".to_string()))?;
-        let mac_id = parts.next().ok_or(ParseError::MissingPart("mac_id".to_string()))?;
-        let channel = parts.next().ok_or(ParseError::MissingPart("channel".to_string()))?;
+        let device_type = parts
+            .next()
+            .ok_or(ParseError::MissingPart("device_type".to_string()))?;
+        let mac_id = parts
+            .next()
+            .ok_or(ParseError::MissingPart("mac_id".to_string()))?;
+        let channel = parts
+            .next()
+            .ok_or(ParseError::MissingPart("channel".to_string()))?;
 
         if parts.next().is_some() {
             return Err(ParseError::InvalidFormat(topic.to_string()));

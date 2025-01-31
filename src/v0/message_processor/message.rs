@@ -42,7 +42,7 @@ pub struct Topic {
     pub channel: String,
 }
 
-pub trait PayloadType: Debug {}
+pub trait PayloadType: Debug + Send + Sync {}
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct DataPayload {
