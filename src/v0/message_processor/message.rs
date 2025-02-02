@@ -2,7 +2,6 @@ use bytes::Bytes;
 use rumqttc::Publish;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::any::Any;
 use std::collections::HashMap;
 use std::fmt::Debug;
 

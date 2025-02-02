@@ -53,7 +53,7 @@ impl Actor for RouterActor {
                             },
                         });
 
-                        // 嘗試從註冊表中找到 data_actor 並發送訊息
+                        // 嘗試從 Actor 註冊表中找到 data_actor 並發送訊息
                         if let Some(data_actor) = registry::where_is("data_actor".to_string()) {
                             let actor_ref: ActorRef<DataMessage> = data_actor.into();
                             if let Err(e) = actor_ref.cast(data_message) {
