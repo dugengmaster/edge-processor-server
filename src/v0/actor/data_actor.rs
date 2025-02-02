@@ -1,10 +1,13 @@
+use crate::v0::message_processor::message::{DataPayload, Message as MqttMessage};
 use ractor::{Actor, ActorProcessingErr, ActorRef};
-use super::ActorMessage;
 
+pub enum DataMessage {
+    Message(MqttMessage<DataPayload>),
+}
 pub struct DataActor;
 
 impl Actor for DataActor {
-    type Msg = ActorMessage;
+    type Msg = DataMessage;
     type State = u8;
     type Arguments = ();
 
@@ -16,22 +19,21 @@ impl Actor for DataActor {
         Ok(0u8)
     }
 
-    fn handle(
+    async fn handle(
         &self,
         _myself: ActorRef<Self::Msg>,
         message: Self::Msg,
         _state: &mut Self::State,
-    ) -> impl std::future::Future<Output = Result<(), ActorProcessingErr>> + Send {
-        async move {
-            match message {
-                ActorMessage::Data(data) => {
-                    println!("[INFO] Data received: {:?}", data);
-                }
-                ActorMessage::OTA(ota) => {
-                    println!("[INFO] OTA received: {:?}", ota);
-                }
+    ) -> Result<(), ActorProcessingErr> {
+        match message {
+            DataMessage::Message(message) => {
+                println!(
+                    "[INFO] Message received - Type: {}, MAC: {}, Channel: {}",
+                    message.topic.device_type, message.topic.mac_id, message.topic.channel,
+                );
+                println!("payload: {:?}", message.payload)
             }
-            Ok(())
         }
+        Ok(())
     }
 }

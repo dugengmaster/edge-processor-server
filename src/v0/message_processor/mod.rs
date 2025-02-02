@@ -1,5 +1,5 @@
 pub mod message;
-mod parser;
+pub mod parser;
 mod validator;
 
 use message::{

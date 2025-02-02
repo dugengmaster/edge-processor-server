@@ -5,7 +5,7 @@ use mqtt_client::{rumqtt_client::RumqttClient, MqttClient, MqttOptions};
 use ractor::actor::{self, Actor};
 use std::sync::Arc;
 use v0::message_processor::MessageProcessor;
-use v0::actor::{RouterActor, RouterMessage};
+use v0::actor::{data_actor::DataActor, RouterActor, RouterMessage};
 
 #[tokio::main]
 async fn main() {
@@ -14,7 +14,8 @@ async fn main() {
 
     let mut mqtt_client = RumqttClient::new(mqttoptions);
     let message_processor = Arc::new(MessageProcessor::new());
-    let (router_actor, _) = Actor::spawn(None, RouterActor, ()).await.expect("Actor failed to start");
+    let (router_actor, _) = Actor::spawn(Some("router_actor".to_string()), RouterActor, ()).await.expect("Route Actor failed to start");
+    Actor::spawn(Some("data_actor".to_string()), DataActor, ()).await.expect("Data Actor failed to start");
 
     mqtt_client.subscribe("DM/#").await;
 
