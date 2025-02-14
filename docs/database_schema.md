@@ -10,6 +10,8 @@
 *   **欄位:**
     *   `id` (INTEGER, 主鍵, 自動遞增)
     *   `macid` (TEXT, 唯一索引)
+    *   `firmware_version`(TEXT)
+    *   `last_online_time`(DATE)
 
 ### 2. `brands` 表
 
@@ -39,10 +41,15 @@
 *   **用途:** 儲存 Modbus 設備資訊。
 *   **欄位:**
     *   `index` (INTEGER, 主鍵, 自動遞增)
-    *   `modbus_slave_id` (INTEGER)
+    *   `created_at`(TIMESTAMP)
+    *   `updated_at`(TIMESTAMP)
     *   `model_id` (INTEGER, 外鍵, 參考 `models` 表)
     *   `name`(TEXT)
+    *   `serial_number`(TEXT)
     *   `horsepower`(INTEGER)
+    *   `location`(TEXT)
+    *   `installation_date`(DATE)
+    *   `last_maintenance_date`(DATE)
 
 ### 6. costomers
 
