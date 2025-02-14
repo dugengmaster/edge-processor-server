@@ -2,7 +2,7 @@ mod mqtt_client;
 mod v0;
 
 use mqtt_client::{rumqtt_client::RumqttClient, MqttClient, MqttOptions};
-use ractor::actor::{self, Actor};
+use ractor::actor::Actor;
 use std::sync::Arc;
 use v0::message_processor::MessageProcessor;
 use v0::actor::{data_actor::DataActor, RouterActor, RouterMessage};

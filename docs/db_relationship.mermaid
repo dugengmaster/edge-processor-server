@@ -1,0 +1,64 @@
+erDiagram
+    customers ||--o{ customer_gateways : "owns"
+    customers ||--o{ customer_equipment : "owns"
+    gateways ||--o{ customer_gateways : "belongs_to"
+    equipment ||--o{ customer_equipment : "belongs_to"
+    customer_gateways ||--o{ gateway_equipment_mapping : "maps_to"
+    customer_equipment ||--o{ gateway_equipment_mapping : "maps_to"
+    customer_equipment ||--o{ sensors_data : "generates"
+    
+    equipment ||--o{ models : "has_model"
+    models ||--o{ brands : "has_brand"
+    models ||--o{ equipment_types : "has_type"
+
+    customers {
+        integer id PK
+    }
+    gateways {
+        integer id PK
+        text macid
+    }
+    customer_gateways {
+        integer id PK
+        integer customer_id FK
+        integer gateway_id FK
+        timestamp created_at
+    }
+    customer_equipment {
+        integer id PK
+        integer customer_id FK
+        integer equipment_id FK
+        timestamp created_at
+    }
+    gateway_equipment_mapping {
+        integer id PK
+        integer customer_gateway_id FK
+        integer customer_equipment_id FK
+        integer modbus_slave_id
+        timestamp created_at
+    }
+    sensors_data {
+        integer id PK
+        integer customer_equipment_id FK
+        timestamp timestamp
+    }
+    equipment {
+        integer index PK
+        integer model_id FK
+        text name
+        integer horsepower
+    }
+    models {
+        integer id PK
+        text name
+        integer brand_id FK
+        integer equipment_type_id FK
+    }
+    brands {
+        integer id PK
+        text name
+    }
+    equipment_types {
+        integer id PK
+        text name
+    }
