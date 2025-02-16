@@ -74,9 +74,9 @@
   - 自動同步 Gateway 連接狀態
   - 閘道器版本更新排程
 
-### 5. 通知系統模組
+### 5. 通知管理模組
 
-- **用途：** 管理系統警報及通知機制
+- **用途：** 管理警報及通知機制
 - **核心表格：**
   - notification_rule_defaults（預設規則）
   - notification_rules（通知規則）
@@ -120,9 +120,9 @@
   - `tax_id` (TEXT) - 統一編號。
   - `description` (TEXT) - 企業描述。
   - `is_active` (BOOLEAN) - 企業資訊是否有效。
-  - `created_by` (INTEGER, 外鍵, 參考 users 表) - 建立者
+  - `created_by` (INTEGER, 外鍵, 參考 users 表) - 建立者。
   - `created_at`(TIMESTAMP WITH TIME ZONE) - 建立時間。
-  - `updated_by` (INTEGER, 外鍵, 參考 users 表) - 最後更新者
+  - `updated_by` (INTEGER, 外鍵, 參考 users 表) - 最後更新者。
   - `updated_at`(TIMESTAMP WITH TIME ZONE) - 最後更新時間。
 
 2. `enterprise_sites` 表
@@ -131,8 +131,8 @@
 - **欄位:**
   - `id` (INTEGER, 主鍵, 自動遞增)
   - `enterprise_id` (INTEGER, 外鍵) - 關聯的企業 ID。
-  - `site_name` (TEXT) - 據點名稱。
-  - `site_type` (TEXT) - 據點類型。
+  - `name` (TEXT) - 據點名稱。
+  - `type` (TEXT) - 據點類型。
   - `location_info` (JSONB) - 位置相關完整資訊，包含：
     - `address`: 完整地址。
     - `coordinate`: 座標相關。
@@ -144,32 +144,12 @@
       - city: 城市。
       - district: 區。
       - postal_code: 郵遞區號。
-    - `public_contact` (JSONB) - 公共聯絡方式，包含：
-      - main_phone: 總機電話。
-      - service_phone: 客服電話。
-      - emergency_phone: 緊急聯絡電話。
-      - fax: 傳真號碼。
-      - email: 公共信箱。
-      - business_hours: 營業時間設定。
-        - regular_hours: 一般營業時間。
-          - monday: ["09:00-12:00", "13:00-18:00"]
-          - tuesday: ["09:00-12:00", "13:00-18:00"]
-          - wednesday: ["09:00-12:00", "13:00-18:00"]
-          - thursday: ["09:00-12:00", "13:00-18:00"]
-          - friday: ["09:00-12:00", "13:00-18:00"]
-          - saturday: ["09:00-12:00"]
-          - sunday: []
-        - special_dates: 特殊日期設定。
-          - holidays: ["2024-01-01", "2024-02-14"]
-          - custom_hours: [
-            {
-            "date": "2024-02-13",
-            "hours": ["09:00-12:00"]
-            }
-            ]
-        - emergency_service: 緊急服務時間。
-          - available: true
-          - hours: ["18:00-09:00"]
+  - `public_contact` (JSONB) - 公共聯絡方式，包含：
+    - main_phone: 總機電話。
+    - service_phone: 客服電話。
+    - emergency_phone: 緊急聯絡電話。
+    - fax: 傳真號碼。
+    - email: 公共信箱。
   - `is_active` (BOOLEAN) - 是否為現行據點。
   - `created_by` (INTEGER, 外鍵, 參考 users 表) - 建立者
   - `created_at`(TIMESTAMP WITH TIME ZONE) - 建立時間。
@@ -198,17 +178,13 @@
 - **欄位:**
   - `id` (INTEGER, 主鍵, 自動遞增)
   - `site_id` (INTEGER, 外鍵) - 關聯的據點 ID。
-  - `user_id` (INTEGER, 外鍵, 參考 users 表) - 若此聯絡人需要系統存取權限，則關聯到使用者帳號
+  - `user_id` (INTEGER, 外鍵, 參考 users 表) - 若此聯絡人需要系統存取權限，則關聯到使用者帳號。
   - `contact_info` (JSONB) - 聯絡資訊，包含：
-    - `basic`: 基本資訊。
-      - name: 姓名。
-      - title: 職稱。
-      - department: 部門。
-      - employee_id: 員工編號。
+  - `name` 姓名。
+  - `title` 職稱。
     - `contact`: 聯絡方式。
       - office_phone: 辦公室電話。
       - extension: 分機。
-      - fax: 傳真。
       - mobile: 手機。
       - email: 電子郵件。
       - messaging_apps: 通訊軟體的聯絡方式。
@@ -288,7 +264,7 @@
   - `id` (INTEGER, 主鍵, 自動遞增)
   - `name` (TEXT) - 品牌名稱，如：JAGUAR、HITACHI、FUSHENG 等。
 
-2. `equipment_types` 表
+2. `device_types` 表
 
 - **用途:** 儲存設備類型資訊。
 - **欄位:**
@@ -313,12 +289,13 @@
   - `name` (TEXT) - 型號名稱，如：AC-2023X。
   - `description` (TEXT) - 該型號描述說明。
   - `brand_id` (INTEGER, 外鍵, 參考 `brands` 表) - 關聯到品牌資訊。
-  - `equipment_type_id` (INTEGER, 外鍵, 參考 `equipment_types` 表) - 關聯到設備類型。
-  - `specs_id` (INTEGER, 外鍵, 參考 `model_specs` 表) - 關聯到當前使用的規格定義
+  - `device_type_id` (INTEGER, 外鍵, 參考 `device_types` 表) - 關聯到設備類型。
+  - `specs_id` (INTEGER, 外鍵, 參考 `model_specs` 表) - 關聯到當前使用的規格定義。
 
 注意：當規格有更新時，只需要更新 specs_id 指向新的 model_specs 記錄，不需要建立新的 models 記錄 🔄。
 
-### 設備實例管理模組
+
+### equipment-service (設備實例管理模組)
 
 1. `equipment` 表
 
