@@ -477,247 +477,7 @@ CREATE TABLE login_logs (
     - 型態: **TEXT**
     - 說明: 登入失敗的原因，若登入成功可為 NULL
 
-### **設備規格管理模組 (`device-service`)**
 
-#### **1️⃣ `brands`（品牌表）**
-
-```sql
-CREATE TABLE brands (
-    id SERIAL PRIMARY KEY,
-    name TEXT UNIQUE NOT NULL
-);
-```
-
-**`brands` 表**
-
-- **用途:** 用於儲存設備或產品所屬的品牌資訊
-
-- **欄位說明:**
-  - **`id`**
-    - 型態: **INTEGER** (主鍵，自動遞增)
-    - 說明: 品牌的唯一識別碼
-  - **`name`**
-    - 型態: **TEXT** (UNIQUE, NOT NULL)
-    - 說明: 品牌名稱，需保證唯一性
-
-#### **2️⃣ `device_types`（設備類型表）**
-
-```sql
-CREATE TABLE device_types (
-    id SERIAL PRIMARY KEY,
-    name TEXT UNIQUE NOT NULL
-);
-```
-
-**`device_types` 表**
-
-- **用途:** 用於儲存設備的類型資訊，如 "空壓機"、"水泵" 等。
-
-- **欄位說明:**
-  - **`id`**
-    - 型態: **INTEGER** (主鍵，自動遞增)
-    - 說明: 設備類型的唯一識別碼
-  - **`name`**
-    - 型態: **TEXT** (UNIQUE, NOT NULL)
-    - 說明: 設備類型的名稱，且需保證唯一
-
-#### **3️⃣ `device_specs`（設備規格表）**
-
-```sql
-CREATE TABLE device_specs (
-    id SERIAL PRIMARY KEY,
-    static_specs JSONB NOT NULL,  -- 靜態規格，如馬力、冷卻方式
-    dynamic_specs JSONB NOT NULL, -- 動態規格，如壓力、電流範圍
-    is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMPTZ NOT NULL
-);
-```
-
-**`device_specs` 表**
-
-- **用途:** 儲存設備型號的完整規格定義
-
-- **欄位說明:**
-  - **`id`**
-    - 型態: **INTEGER** (主鍵，自動遞增)
-    - 說明: 唯一識別碼
-  - **`static_specs`**
-    - 型態: **JSONB** (NOT NULL)
-    - 說明: 儲存不會變動的靜態規格，如馬力、冷卻方式等
-    - 範例:
-      ```json
-      {
-        "horsepower": "15HP",
-        "cooling_method": "Water Cooled",
-        "power_supply": "3-Phase 220V"
-      }
-      ```
-  - **`dynamic_specs`**
-    - 型態: **JSONB** (NOT NULL)
-    - 說明: 儲存可變動的動態規格，如壓力、電流、啟動 / 停止狀態等
-    - 範例:
-      ```json
-      {
-        "pressure": {
-          "value": 0.65,
-          "unit": "bar"
-        },
-        "current": {
-          "value": 32,
-          "unit": "A"
-        }
-      }
-      ```
-  - **`is_active`**
-    - 型態: **BOOLEAN** (預設 `TRUE`)
-    - 說明: 表示此規格定義是否仍有效
-  - **`created_at`**
-    - 型態: **TIMESTAMPTZ** (NOT NULL)
-    - 說明: 此規格定義的建立時間
-
-#### **4️⃣ `device_models`（設備型號表）**
-
-```sql
-CREATE TABLE device_models (
-    id SERIAL PRIMARY KEY,
-    name TEXT UNIQUE NOT NULL,
-    description TEXT,
-    brand_id INTEGER NOT NULL REFERENCES brands(id),
-    device_type_id INTEGER NOT NULL REFERENCES device_types(id),
-    device_spec_id INTEGER NOT NULL REFERENCES device_specs(id)
-);
-```
-
-> **注意：** 當規格有更新時，只需要更新 `device_spec_id` 指向新的 `device_specs` 記錄，不需要建立新的 `device_models` 記錄。
-
-**`device_models` 表**
-
-- **用途:** 儲存設備的型號資訊，以品牌、設備類型與規格之間的關係為主。
-
-- **欄位說明:**
-  - **`id`**
-    - 型態: **INTEGER** (主鍵，自動遞增)
-    - 說明: 該設備型號的唯一識別碼。
-  - **`name`**
-    - 型態: **TEXT** (UNIQUE, NOT NULL)
-    - 說明: 型號名稱，需保證唯一。
-  - **`description`**
-    - 型態: **TEXT**
-    - 說明: 關於此型號的描述，例如功能、特色等。
-  - **`brand_id`**
-    - 型態: **INTEGER** (外鍵，參考 `brands.id`，NOT NULL)
-    - 說明: 指定此型號所屬的品牌。
-  - **`device_type_id`**
-    - 型態: **INTEGER** (外鍵，參考 `device_types.id`，NOT NULL)
-    - 說明: 指定此型號的設備類型。
-  - **`device_spec_id`**
-    - 型態: **INTEGER** (外鍵，參考 `device_specs.id`，NOT NULL)
-    - 說明: 指向與此型號關聯的設備規格。
-- **注意:** 若規格更新，僅需更新 `device_spec_id` 指向新的 `device_specs` 記錄即可。
-
-### **設備實例管理模組 (`equipment-service`)**
-
-#### **1️⃣ `equipment`（設備表）**
-
-```sql
-CREATE TABLE equipment (
-    id SERIAL PRIMARY KEY,
-    facility_id INTEGER NOT NULL REFERENCES site_facilities(id),
-    model_id INTEGER NOT NULL REFERENCES device_models(id),
-    name TEXT NOT NULL,
-    serial_number TEXT UNIQUE NOT NULL,
-    purchase_date DATE,
-    is_active BOOLEAN DEFAULT TRUE,
-    created_by INTEGER REFERENCES users(id),
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_by INTEGER REFERENCES users(id),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-```
-
-**`equipment` 表**
-
-- **用途:** 用於儲存每個實際設備的資訊，包含其所屬地點、型號等
-
-- **欄位說明:**
-  - **`id`**
-    - 型態: **INTEGER** (主鍵，自動遞增)
-    - 說明: 設備的唯一識別碼
-  - **`facility_id`**
-    - 型態: **INTEGER** (外鍵，參考 `site_facilities.id`)
-    - 說明: 該設備所屬的設施位置 ID
-  - **`model_id`**
-    - 型態: **INTEGER** (外鍵，參考 `device_models.id`)
-    - 說明: 指向該設備所使用的型號（含品牌、類型、規格）
-  - **`name`**
-    - 型態: **TEXT** (NOT NULL)
-    - 說明: 自訂的設備名稱或代號
-  - **`serial_number`**
-    - 型態: **TEXT** (UNIQUE, NOT NULL)
-    - 說明: 設備序號，須保證唯一
-  - **`purchase_date`**
-    - 型態: **DATE**
-    - 說明: 購買或取得日期
-  - **`is_active`**
-    - 型態: **BOOLEAN** (預設 `TRUE`)
-    - 說明: 用來標記設備是否仍在使用
-  - **`created_by`**
-    - 型態: **INTEGER** (外鍵，參考 `users.id`)
-    - 說明: 建立此紀錄的使用者 ID
-  - **`created_at`**
-    - 型態: **TIMESTAMPTZ** (預設 `NOW()`)
-    - 說明: 建立時間
-  - **`updated_by`**
-    - 型態: **INTEGER** (外鍵，參考 `users.id`)
-    - 說明: 最後更新此紀錄的使用者 ID
-  - **`updated_at`**
-    - 型態: **TIMESTAMPTZ** (預設 `NOW()`)
-    - 說明: 最後更新時間
-
-#### **2️⃣ `maintenance_records`（設備維護紀錄）**
-
-```sql
-CREATE TABLE maintenance_records (
-    id SERIAL PRIMARY KEY,
-    equipment_id INTEGER NOT NULL REFERENCES equipment(id),
-    installation_date DATE,
-    maintenance_date DATE,
-    maintenance_type TEXT,
-    description TEXT,
-    maintained_by TEXT,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-```
-
-**`maintenance_records` 表**
-
-- **用途:** 紀錄設備的安裝與維護歷史，以便追蹤與維護管理
-
-- **欄位說明:**
-  - **`id`**
-    - 型態: **INTEGER** (主鍵，自動遞增)
-    - 說明: 維護紀錄的唯一識別碼
-  - **`equipment_id`**
-    - 型態: **INTEGER** (外鍵，參考 `equipment.id`，NOT NULL)
-    - 說明: 該維護紀錄所屬的設備 ID
-  - **`installation_date`**
-    - 型態: **DATE**
-    - 說明: 設備安裝日期 (若適用)
-  - **`maintenance_date`**
-    - 型態: **DATE**
-    - 說明: 此次維護的執行日期
-  - **`maintenance_type`**
-    - 型態: **TEXT**
-    - 說明: 維護類型 (如定期保養、故障維修等)
-  - **`description`**
-    - 型態: **TEXT**
-    - 說明: 對此次維護的詳述說明
-  - **`maintained_by`**
-    - 型態: **TEXT**
-    - 說明: 執行維護的人員或單位
-  - **`created_at`**
-    - 型態: **TIMESTAMPTZ** (預設 `NOW()`)
-    - 說明: 紀錄建立時間
 
 ### **閘道器管理模組 (`gateway-service`)**
 
@@ -888,7 +648,7 @@ CREATE TABLE notification_rules (
     rule_type TEXT CHECK (rule_type IN ('THRESHOLD', 'STATUS_CHANGE', 'MAINTENANCE')) NOT NULL,
     conditions JSONB NOT NULL,
     severity TEXT CHECK (severity IN ('CRITICAL', 'WARNING', 'INFO')) NOT NULL,
-    notification_methods JSONB NOT NULL, 
+    notification_methods JSONB NOT NULL,
     recipients JSONB NOT NULL,
     is_active BOOLEAN DEFAULT TRUE,
     created_by INTEGER REFERENCES users(id),
@@ -995,3 +755,114 @@ CREATE TABLE equipment_control_logs (
 CREATE INDEX idx_equipment_control_logs_command ON equipment_control_logs USING GIN (command);
 ```
 
+## **審計日誌模組 (`audit-log-service`)**
+
+### **1️⃣ `audit_logs`（審計日誌表）**
+
+```sql
+CREATE TABLE audit_logs (
+    id BIGSERIAL PRIMARY KEY,
+    event_type TEXT NOT NULL CHECK (event_type IN ('CREATE', 'UPDATE', 'DELETE', 'LOGIN', 'LOGOUT', 'ACCESS_DENIED')),
+    user_id INTEGER REFERENCES users(id),
+    target_id INTEGER,
+    target_table TEXT,
+    change_details JSONB,
+    ip_address TEXT NOT NULL,
+    user_agent TEXT,
+    event_time TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+**`audit_logs` 表**
+
+- **用途:** 記錄系統內重要操作行為，以確保系統的安全性與可追溯性。
+- **欄位說明:**
+  - **`id`**
+    - 型態: **BIGSERIAL** (主鍵，自動遞增)
+    - 說明: 唯一識別碼。
+  - **`event_type`**
+    - 型態: **TEXT**
+    - 說明: 記錄操作類型，包括 **CREATE（建立）**、**UPDATE（更新）**、**DELETE（刪除）**、**LOGIN（登入）**、**LOGOUT（登出）**、**ACCESS_DENIED（存取拒絕）**。
+  - **`user_id`**
+    - 型態: **INTEGER** (外鍵，參考 `users.id`)
+    - 說明: 執行操作的使用者 ID。
+  - **`target_id`**
+    - 型態: **INTEGER**
+    - 說明: 影響的記錄 ID，例如被修改的設備或用戶。
+  - **`target_table`**
+    - 型態: **TEXT**
+    - 說明: 影響的資料表名稱。
+  - **`change_details`**
+    - 型態: **JSONB**
+    - 說明: 記錄變更的詳細內容。
+  - **`ip_address`**
+    - 型態: **TEXT**
+    - 說明: 執行操作時的來源 IP。
+  - **`user_agent`**
+    - 型態: **TEXT**
+    - 說明: 操作者的裝置資訊。
+  - **`event_time`**
+    - 型態: **TIMESTAMPTZ** (預設 `NOW()`)
+    - 說明: 記錄發生的時間。
+
+### **2️⃣ `audit_log_archives`（審計日誌歸檔表）**
+
+```sql
+CREATE TABLE audit_log_archives (
+    id BIGSERIAL PRIMARY KEY,
+    audit_data JSONB NOT NULL,
+    archived_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+**`audit_log_archives` 表**
+
+- **用途:** 存放歷史審計日誌，減少 `audit_logs` 表的資料量。
+- **欄位說明:**
+  - **`id`**
+    - 型態: **BIGSERIAL** (主鍵，自動遞增)
+    - 說明: 唯一識別碼。
+  - **`audit_data`**
+    - 型態: **JSONB**
+    - 說明: 已壓縮的舊審計日誌。
+  - **`archived_at`**
+    - 型態: **TIMESTAMPTZ** (預設 `NOW()`)
+    - 說明: 歸檔時間。
+
+### **3️⃣ 觸發器與自動歸檔機制**
+
+```sql
+CREATE OR REPLACE FUNCTION archive_old_audit_logs()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO audit_log_archives (audit_data)
+    SELECT json_agg(audit_logs) FROM audit_logs WHERE event_time < NOW() - INTERVAL '6 months';
+    DELETE FROM audit_logs WHERE event_time < NOW() - INTERVAL '6 months';
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER audit_log_archiver
+AFTER INSERT ON audit_logs
+EXECUTE FUNCTION archive_old_audit_logs();
+```
+
+**機制說明:**
+
+- 當有新紀錄插入 `audit_logs` 時，系統將會檢查是否有 6 個月以上的舊紀錄，並將其歸檔至 `audit_log_archives`。
+
+### **4️⃣ API 端點**
+
+| 方法   | 路徑               | 描述                 |
+| ------ | ------------------ | -------------------- |
+| GET    | `/audit-logs`      | 取得最近的審計日誌   |
+| GET    | `/audit-logs/{id}` | 根據 ID 取得審計日誌 |
+| DELETE | `/audit-logs/{id}` | 刪除特定的審計日誌   |
+| GET    | `/audit-archives`  | 取得歸檔的日誌       |
+
+### **5️⃣ 權限管理**
+
+- **管理員（ADMIN）** 具備完整管理審計日誌的權限。
+- **一般使用者（USER）** 只能檢視與自己相關的操作紀錄。
+
+這個 `audit-log-service` 讓系統可以記錄重要操作行為，確保審計可追蹤，並符合微服務架構的最佳實踐。
