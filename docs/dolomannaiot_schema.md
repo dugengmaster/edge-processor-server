@@ -721,8 +721,6 @@ CREATE TABLE maintenance_records (
 
 ### **閘道器管理模組 (`gateway-service`)**
 
-### **閘道器管理模組 (`gateway-service`)**
-
 #### **1️⃣ `gateways`（閘道器表）**
 
 ```sql
@@ -862,10 +860,10 @@ CREATE TABLE gateway_equipment_connections (
 
 ### **通知系統模組 (`notification-service`)**
 
-#### **1️⃣ `notification_rule`（預設通知規則表）**
+#### **1️⃣ `notification_rules_default`（預設通知規則表）**
 
 ```sql
-CREATE TABLE notification_rule (
+CREATE TABLE notification_rules_default (
     id SERIAL PRIMARY KEY,
     device_model_id INTEGER NOT NULL REFERENCES device_models(id),
     name TEXT NOT NULL,
@@ -887,6 +885,7 @@ CREATE TABLE notification_rules (
     id SERIAL PRIMARY KEY,
     equipment_id INTEGER NOT NULL REFERENCES equipment(id),
     name TEXT NOT NULL,
+    rule_type TEXT CHECK (rule_type IN ('THRESHOLD', 'STATUS_CHANGE', 'MAINTENANCE')) NOT NULL,
     conditions JSONB NOT NULL,
     severity TEXT CHECK (severity IN ('CRITICAL', 'WARNING', 'INFO')) NOT NULL,
     notification_methods JSONB NOT NULL, 
@@ -905,40 +904,49 @@ CREATE TABLE notification_rules (
 
 ```sql
 CREATE TABLE gateway_status_logs (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     gateway_id INTEGER NOT NULL REFERENCES gateways(id),
     status TEXT CHECK (status IN ('ONLINE', 'OFFLINE', 'ERROR', 'MAINTENANCE')) NOT NULL,
     recorded_at TIMESTAMPTZ NOT NULL
 );
+
+-- 轉為 TimescaleDB 時序表
+SELECT create_hypertable('gateway_status_logs', 'recorded_at');
 ```
 
 #### **2️⃣ `equipment_status_logs`（設備狀態紀錄表）**
 
 ```sql
 CREATE TABLE equipment_status_logs (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     equipment_id INTEGER NOT NULL REFERENCES equipment(id),
     status TEXT CHECK (status IN ('RUNNING', 'STOPPED', 'ERROR', 'MAINTENANCE', 'STANDBY')) NOT NULL,
     recorded_at TIMESTAMPTZ NOT NULL
 );
+
+-- 轉為 TimescaleDB 時序表
+SELECT create_hypertable('equipment_status_logs', 'recorded_at');
 ```
 
 #### **3️⃣ `equipment_metrics`（設備即時數據表）**
 
 ```sql
 CREATE TABLE equipment_metrics (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     gateway_equipment_connection_id INTEGER NOT NULL REFERENCES gateway_equipment_connections(id),
     metrics_data JSONB NOT NULL,
     recorded_at TIMESTAMPTZ NOT NULL
 );
+
+-- 轉為 TimescaleDB 時序表
+SELECT create_hypertable('equipment_metrics', 'recorded_at');
 ```
 
 #### **4️⃣ `notification_logs`（通知發送歷史表）**
 
 ```sql
 CREATE TABLE notification_logs (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     rule_id INTEGER NOT NULL REFERENCES notification_rules(id),
     equipment_id INTEGER NOT NULL REFERENCES equipment(id),
     triggered_value JSONB NOT NULL,
@@ -947,26 +955,34 @@ CREATE TABLE notification_logs (
     sent_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- 索引優化
+CREATE INDEX idx_notification_logs_status ON notification_logs (status);
+CREATE INDEX idx_notification_logs_equipment ON notification_logs (equipment_id);
+
 ```
 
 #### **5️⃣ `gateway_update_logs`（閘道器更新紀錄表）**
 
 ```sql
 CREATE TABLE gateway_update_logs (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     task_id INTEGER NOT NULL REFERENCES gateway_update_tasks(id),
     status TEXT CHECK (status IN ('COMPLETED', 'FAILED')) NOT NULL,
     error_message TEXT,
     completed_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- 索引優化
+CREATE INDEX idx_gateway_update_logs_task ON gateway_update_logs (task_id);
 ```
 
 #### **6️⃣ `equipment_control_logs`（設備遠端控制紀錄表）**
 
 ```sql
 CREATE TABLE equipment_control_logs (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     gateway_equipment_connection_id INTEGER NOT NULL REFERENCES gateway_equipment_connections(id),
     command JSONB NOT NULL,
     result TEXT CHECK (result IN ('SUCCESS', 'FAILED')) NOT NULL,
@@ -974,4 +990,8 @@ CREATE TABLE equipment_control_logs (
     created_by INTEGER REFERENCES users(id),
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- JSONB 查詢最佳化
+CREATE INDEX idx_equipment_control_logs_command ON equipment_control_logs USING GIN (command);
 ```
+
