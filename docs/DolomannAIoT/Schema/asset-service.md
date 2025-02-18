@@ -3,12 +3,16 @@
 ## **1️⃣ `device_brands`（設備品牌表）**
 
 ```sql
-CREATE TABLE brands (
+CREATE TABLE device_brands (
     id SERIAL PRIMARY KEY,
-    name TEXT UNIQUE NOT NULL,
+    name TEXT NOT NULL,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+CREATE UNIQUE INDEX device_brands_unique_active
+ON device_brands (name)
+WHERE is_active = TRUE;
 ```
 
 **`device_brands` 表**
@@ -38,6 +42,10 @@ CREATE TABLE device_types (
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+CREATE UNIQUE INDEX device_types_unique_active
+ON device_types (name)
+WHERE is_active = TRUE;
 ```
 
 **`device_types` 表**
@@ -63,8 +71,8 @@ CREATE TABLE device_types (
 ```sql
 CREATE TABLE device_specs (
     id SERIAL PRIMARY KEY,
-    static_specs JSONB NOT NULL,  -- 靜態規格，如馬力、冷卻方式
-    dynamic_specs JSONB NOT NULL, -- 動態規格，如壓力、電流範圍
+    static_specs JSONB NULL,  -- 靜態規格，如馬力、冷卻方式
+    dynamic_specs JSONB NULL, -- 動態規格，如壓力、電流範圍
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -114,20 +122,25 @@ CREATE TABLE device_specs (
 
 ## **4️⃣ `device_models`（設備型號表）**
 
+**重要注意事項：**
+- 此表格作為對外窗口，使用 UUID 作為主鍵。
+- `updated_at` 欄位由業務層負責更新，不使用資料庫觸發器。
+- 所有對此表格的更新操作都必須包含 `updated_at` 的更新。
+- 當規格有更新時，只需要更新 `device_spec_id` 指向新的 `device_specs` 記錄，不需要建立新的 `device_models` 記錄。
+
 ```sql
 CREATE TABLE device_models (
-    id SERIAL PRIMARY KEY,
-    name TEXT UNIQUE NOT NULL,
+    id UUID PRIMARY KEY,
+    name TEXT NOT NULL,
     description TEXT,
-    brand_id INTEGER NOT NULL REFERENCES brands(id),
+    brand_id INTEGER NOT NULL REFERENCES device_brands(id),
     device_type_id INTEGER NOT NULL REFERENCES device_types(id),
     device_spec_id INTEGER NOT NULL REFERENCES device_specs(id),
     is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ
 );
 ```
-
-> **注意：** 當規格有更新時，只需要更新 `device_spec_id` 指向新的 `device_specs` 記錄，不需要建立新的 `device_models` 記錄。
 
 **`device_models` 表**
 
@@ -135,8 +148,8 @@ CREATE TABLE device_models (
 
 - **欄位說明:**
   - **`id`**
-    - 型態: **INTEGER** (主鍵，自動遞增)
-    - 說明: 該設備型號的唯一識別碼。
+    - 型態: **UUID** (主鍵)
+    - 說明: 該設備型號的全局唯一識別碼，用於跨服務引用。
   - **`name`**
     - 型態: **TEXT** (UNIQUE, NOT NULL)
     - 說明: 型號名稱，需保證唯一。
@@ -158,7 +171,9 @@ CREATE TABLE device_models (
   - **`created_at`**
     - 型態: **TIMESTAMPTZ** (預設值: `NOW()`)
     - 說明: 規格定義的建立時間。
-- **注意:** 若規格更新，僅需更新 `device_spec_id` 指向新的 `device_specs` 記錄即可。
+  - **`updated_at`**
+    - 型態: **TIMESTAMPTZ**
+    - 說明: 最後更新時間，。
 
 ## **1️⃣ `equipment`（設備表）**
 
@@ -172,7 +187,7 @@ CREATE TABLE equipment (
     purchase_date DATE,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+    updated_at TIMESTAMPTZ
 );
 ```
 
@@ -206,7 +221,7 @@ CREATE TABLE equipment (
     - 型態: **TIMESTAMPTZ** (預設 `NOW()`)
     - 說明: 建立時間。
   - **`updated_at`**
-    - 型態: **TIMESTAMPTZ** (預設 `NOW()`)
+    - 型態: **TIMESTAMPTZ**
     - 說明: 最後更新時間。
 
 ## **2️⃣ `maintenance_records`（設備維護紀錄）**
