@@ -45,38 +45,38 @@ pub struct MockDatabase {
 impl MockDatabase {
     pub fn new() -> Self {
         let gateways = vec![
-            Gateway {
-                gateway_id: 1,
-                gateway_macid: "8CAAB5537EF2".to_string(),
-            },
-            Gateway {
-                gateway_id: 2,
-                gateway_macid: "C8C9A3583898".to_string(),
-            },
+            // Gateway {
+            //     gateway_id: 1,
+            //     gateway_macid: "8CAAB5537EF2".to_string(),
+            // },
+            // Gateway {
+            //     gateway_id: 2,
+            //     gateway_macid: "C8C9A3583898".to_string(),
+            // },
             Gateway {
                 gateway_id: 3,
                 gateway_macid: "483FDA578E98".to_string(),
             },
-            Gateway {
-                gateway_id: 4,
-                gateway_macid: "A020A624F3E0".to_string(),
-            },
-            Gateway {
-                gateway_id: 5,
-                gateway_macid: "BCFF4DCFDCEA".to_string(),
-            },
-            Gateway {
-                gateway_id: 6,
-                gateway_macid: "D8BFC0192998".to_string(),
-            },
-            Gateway {
-                gateway_id: 7,
-                gateway_macid: "483FDA44DFAF".to_string(),
-            },
-            Gateway {
-                gateway_id: 8,
-                gateway_macid: "BCDDC2568AA4".to_string(),
-            },
+            // Gateway {
+            //     gateway_id: 4,
+            //     gateway_macid: "A020A624F3E0".to_string(),
+            // },
+            // Gateway {
+            //     gateway_id: 5,
+            //     gateway_macid: "BCFF4DCFDCEA".to_string(),
+            // },
+            // Gateway {
+            //     gateway_id: 6,
+            //     gateway_macid: "D8BFC0192998".to_string(),
+            // },
+            // Gateway {
+            //     gateway_id: 7,
+            //     gateway_macid: "483FDA44DFAF".to_string(),
+            // },
+            // Gateway {
+            //     gateway_id: 8,
+            //     gateway_macid: "BCDDC2568AA4".to_string(),
+            // },
         ];
 
         let brands = vec![
