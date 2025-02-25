@@ -34,12 +34,19 @@ pub struct DeviceInfo {
     pub model_id: u32,
 }
 #[allow(dead_code)]
+#[derive(Debug)]
+pub struct DataMapping {
+    pub data_key: String,
+    pub chinese_description: String,
+}
+#[allow(dead_code)]
 pub struct MockDatabase {
     pub gateways: Vec<Gateway>,
     pub brands: Vec<Brand>,
     pub device_types: Vec<DeviceType>,
     pub models: Vec<Model>,
     pub data: Vec<DeviceInfo>,
+    pub data_mapping: Vec<DataMapping>,
 }
 #[allow(dead_code)]
 impl MockDatabase {
@@ -185,12 +192,168 @@ impl MockDatabase {
             },
         ];
 
+        let data_mapping = vec![
+            DataMapping {
+                data_key: "0".to_string(),
+                chinese_description: "供氣壓力".to_string(),
+            },
+            DataMapping {
+                data_key: "1".to_string(),
+                chinese_description: "排氣溫度".to_string(),
+            },
+            DataMapping {
+                data_key: "2".to_string(),
+                chinese_description: "運行總時間".to_string(),
+            },
+            DataMapping {
+                data_key: "3".to_string(),
+                chinese_description: "負載總時間".to_string(),
+            },
+            DataMapping {
+                data_key: "4".to_string(),
+                chinese_description: "主機三相電流A".to_string(),
+            },
+            DataMapping {
+                data_key: "5".to_string(),
+                chinese_description: "主機三相電流B".to_string(),
+            },
+            DataMapping {
+                data_key: "6".to_string(),
+                chinese_description: "主機三相電流C".to_string(),
+            },
+            DataMapping {
+                data_key: "10".to_string(),
+                chinese_description: "油濾器使用時間".to_string(),
+            },
+            DataMapping {
+                data_key: "11".to_string(),
+                chinese_description: "油分器使用時間".to_string(),
+            },
+            DataMapping {
+                data_key: "12".to_string(),
+                chinese_description: "空濾器使用時間".to_string(),
+            },
+            DataMapping {
+                data_key: "13".to_string(),
+                chinese_description: "潤滑油使用時間".to_string(),
+            },
+            DataMapping {
+                data_key: "14".to_string(),
+                chinese_description: "潤滑脂使用時間".to_string(),
+            },
+            DataMapping {
+                data_key: "17".to_string(),
+                chinese_description: "風機三相電流A".to_string(),
+            },
+            DataMapping {
+                data_key: "18".to_string(),
+                chinese_description: "風機三相電流B".to_string(),
+            },
+            DataMapping {
+                data_key: "19".to_string(),
+                chinese_description: "風機三相電流C".to_string(),
+            },
+            DataMapping {
+                data_key: "22".to_string(),
+                chinese_description: "相序保護電壓".to_string(),
+            },
+            DataMapping {
+                data_key: "23".to_string(),
+                chinese_description: "缺相保護電壓".to_string(),
+            },
+            DataMapping {
+                data_key: "24".to_string(),
+                chinese_description: "電源電壓".to_string(),
+            },
+            DataMapping {
+                data_key: "25".to_string(),
+                chinese_description: "預警".to_string(),
+            },
+            DataMapping {
+                data_key: "26".to_string(),
+                chinese_description: "運行狀態".to_string(),
+            },
+            DataMapping {
+                data_key: "27".to_string(),
+                chinese_description: "計時".to_string(),
+            },
+            DataMapping {
+                data_key: "28".to_string(),
+                chinese_description: "故障".to_string(),
+            },
+            DataMapping {
+                data_key: "32".to_string(),
+                chinese_description: "運轉電壓".to_string(),
+            },
+            DataMapping {
+                data_key: "33".to_string(),
+                chinese_description: "運轉電流".to_string(),
+            },
+            DataMapping {
+                data_key: "34".to_string(),
+                chinese_description: "馬達輸出頻率".to_string(),
+            },
+            DataMapping {
+                data_key: "35".to_string(),
+                chinese_description: "當前運轉功率".to_string(),
+            },
+            DataMapping {
+                data_key: "36".to_string(),
+                chinese_description: "風機輸出電壓".to_string(),
+            },
+            DataMapping {
+                data_key: "37".to_string(),
+                chinese_description: "風機輸出電流".to_string(),
+            },
+            DataMapping {
+                data_key: "38".to_string(),
+                chinese_description: "風機輸出頻率".to_string(),
+            },
+            DataMapping {
+                data_key: "39".to_string(),
+                chinese_description: "風機輸出功率".to_string(),
+            },
+            DataMapping {
+                data_key: "40".to_string(),
+                chinese_description: "主機轉速".to_string(),
+            },
+            DataMapping {
+                data_key: "41".to_string(),
+                chinese_description: "散熱風扇轉速".to_string(),
+            },
+            DataMapping {
+                data_key: "44".to_string(),
+                chinese_description: "本次運行時間".to_string(),
+            },
+            DataMapping {
+                data_key: "47".to_string(),
+                chinese_description: "本次負載時間".to_string(),
+            },
+            DataMapping {
+                data_key: "61".to_string(),
+                chinese_description: "主機本次用電".to_string(),
+            },
+            DataMapping {
+                data_key: "66".to_string(),
+                chinese_description: "風機本次用電".to_string(),
+            },
+            DataMapping {
+                data_key: "77".to_string(),
+                chinese_description: "每分鐘流量".to_string(),
+            },
+            DataMapping {
+                data_key: "80".to_string(),
+                chinese_description: "累積流量".to_string(),
+            },
+        ];
+
         MockDatabase {
             gateways,
             brands,
             device_types,
             models,
             data,
+            data_mapping,
         }
     }
 

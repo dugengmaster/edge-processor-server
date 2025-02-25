@@ -1,7 +1,5 @@
 pub mod data_actor;
 
-use std::any::Any;
-
 use ractor::registry;
 use ractor::{Actor, ActorProcessingErr, ActorRef};
 
