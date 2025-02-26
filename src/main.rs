@@ -30,7 +30,10 @@ async fn main() {
             tokio::spawn(async move {
                 match processor.message_processor(raw_message) {
                     Ok(message) => {
-                        router.cast(RouterMessage::Message(message)).unwrap();
+                        match router.cast(RouterMessage::Message(message)) {
+                            Ok(_) => {},
+                            Err(e) => println!("Failed to send message to router: {:?}", e),
+                        }
                     }
                     Err(err) => {
                         println!("Error processing message: {:?}", err);

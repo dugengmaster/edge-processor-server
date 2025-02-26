@@ -1,4 +1,5 @@
 pub mod data_actor;
+pub mod db_actor;
 
 use ractor::registry;
 use ractor::{Actor, ActorProcessingErr, ActorRef};

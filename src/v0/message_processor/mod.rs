@@ -27,7 +27,7 @@ impl MessageProcessor {
                     Ok(topic)
                 } else {
                     Err(ParseError::InvalidFormat(format!(
-                        "Invalid topic format: {}",
+                        "Topic '{}' is not registered.",
                         raw_message_topic
                     )))
                 }
