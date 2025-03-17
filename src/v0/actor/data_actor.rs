@@ -1,8 +1,8 @@
-use crate::v0::message_processor::message::{DataPayload, Message as MqttMessage};
 use crate::v0::gateway_modbus_device::MockDatabase;
+use crate::v0::message_processor::message::{DataPayload, Message as MqttMessage};
 use ractor::{Actor, ActorProcessingErr, ActorRef};
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use serde::{Serialize, Deserialize};
 
 pub enum DataMessage {
     Message(MqttMessage<DataPayload>),
@@ -10,10 +10,10 @@ pub enum DataMessage {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SensorData {
-    pub sensor_name: String,  // 感測器名稱（中文描述）
-    pub value: f64,           // 數值
-    pub timestamp: String,    // 時間戳記
-    pub unit: String,         // 單位
+    pub sensor_name: String, // 感測器名稱（中文描述）
+    pub value: f64,          // 數值
+    pub timestamp: String,   // 時間戳記
+    pub unit: String,        // 單位
 }
 
 pub struct DataActor;
@@ -46,14 +46,18 @@ impl Actor for DataActor {
 
                 // 創建模擬資料庫實例
                 let db = MockDatabase::new();
-                
+
                 // 創建一個新的結構化數據集合
                 let mut sensor_data_vec: Vec<SensorData> = Vec::new();
-                
+
                 // 遍歷原始資料
                 for (key, value) in &message.payload.data {
                     // 尋找對應的中文描述和單位
-                    if let Some(mapping) = db.data_mapping.iter().find(|mapping| mapping.data_key == *key) {
+                    if let Some(mapping) = db
+                        .data_mapping
+                        .iter()
+                        .find(|mapping| mapping.data_key == *key)
+                    {
                         // 從 Value 中提取數值
                         if let Some(num_value) = extract_number_value(value) {
                             // 創建結構化的傳感器資料，使用預設的單位
@@ -63,7 +67,7 @@ impl Actor for DataActor {
                                 timestamp: message.payload.timestamp.clone(),
                                 unit: mapping.unit.clone(),
                             };
-                            
+
                             // 添加到集合中
                             sensor_data_vec.push(sensor_data);
                         }
@@ -88,4 +92,3 @@ fn extract_number_value(value: &Value) -> Option<f64> {
         None
     }
 }
-
