@@ -38,7 +38,8 @@ pub struct DeviceInfo {
 pub struct DataMapping {
     pub data_key: String,
     pub chinese_description: String,
-    pub unit: String,  // 新增單位欄位
+    pub eng_description: String, // 新增英文描述欄位
+    pub unit: String,            // 新增單位欄位
 }
 #[allow(dead_code)]
 pub struct MockDatabase {
@@ -197,191 +198,229 @@ impl MockDatabase {
             DataMapping {
                 data_key: "0".to_string(),
                 chinese_description: "供氣壓力".to_string(),
+                eng_description: "Discharge Pressure".to_string(),
                 unit: "Mpa".to_string(),
             },
             DataMapping {
                 data_key: "1".to_string(),
                 chinese_description: "排氣溫度".to_string(),
+                eng_description: "Discharge Temperature".to_string(),
                 unit: "℃".to_string(),
             },
             DataMapping {
                 data_key: "2".to_string(),
                 chinese_description: "運行總時間".to_string(),
+                eng_description: "Total Running Time".to_string(),
                 unit: "hr".to_string(),
             },
             DataMapping {
                 data_key: "3".to_string(),
                 chinese_description: "負載總時間".to_string(),
+                eng_description: "Total Load Time".to_string(),
                 unit: "hr".to_string(),
             },
             DataMapping {
                 data_key: "4".to_string(),
                 chinese_description: "主機三相電流A".to_string(),
+                eng_description: "Main Motor Phase Current A".to_string(),
                 unit: "A".to_string(),
             },
             DataMapping {
                 data_key: "5".to_string(),
                 chinese_description: "主機三相電流B".to_string(),
+                eng_description: "Main Motor Phase Current B".to_string(),
                 unit: "A".to_string(),
             },
             DataMapping {
                 data_key: "6".to_string(),
                 chinese_description: "主機三相電流C".to_string(),
+                eng_description: "Main Motor Phase Current C".to_string(),
                 unit: "A".to_string(),
             },
             DataMapping {
                 data_key: "10".to_string(),
                 chinese_description: "油濾器使用時間".to_string(),
+                eng_description: "Oil Filter Usage Time".to_string(),
                 unit: "hr".to_string(),
             },
             DataMapping {
                 data_key: "11".to_string(),
                 chinese_description: "油分器使用時間".to_string(),
+                eng_description: "Oil Separator Usage Time".to_string(),
                 unit: "hr".to_string(),
             },
             DataMapping {
                 data_key: "12".to_string(),
                 chinese_description: "空濾器使用時間".to_string(),
+                eng_description: "Air Filter Usage Time".to_string(),
                 unit: "hr".to_string(),
             },
             DataMapping {
                 data_key: "13".to_string(),
                 chinese_description: "潤滑油使用時間".to_string(),
+                eng_description: "Lubricant Usage Time".to_string(),
                 unit: "hr".to_string(),
             },
             DataMapping {
                 data_key: "14".to_string(),
                 chinese_description: "潤滑脂使用時間".to_string(),
+                eng_description: "Grease Usage Time".to_string(),
                 unit: "hr".to_string(),
             },
             DataMapping {
                 data_key: "17".to_string(),
                 chinese_description: "風機三相電流A".to_string(),
+                eng_description: "Fan Motor Phase Current A".to_string(),
                 unit: "A".to_string(),
             },
             DataMapping {
                 data_key: "18".to_string(),
                 chinese_description: "風機三相電流B".to_string(),
+                eng_description: "Fan Motor Phase Current B".to_string(),
                 unit: "A".to_string(),
             },
             DataMapping {
                 data_key: "19".to_string(),
                 chinese_description: "風機三相電流C".to_string(),
+                eng_description: "Fan Motor Phase Current C".to_string(),
                 unit: "A".to_string(),
             },
             DataMapping {
                 data_key: "22".to_string(),
                 chinese_description: "相序保護電壓".to_string(),
+                eng_description: "Phase Sequence Protection Voltage".to_string(),
                 unit: "V".to_string(),
             },
             DataMapping {
                 data_key: "23".to_string(),
                 chinese_description: "缺相保護電壓".to_string(),
+                eng_description: "Phase Loss Protection Voltage".to_string(),
                 unit: "V".to_string(),
             },
             DataMapping {
                 data_key: "24".to_string(),
                 chinese_description: "電源電壓".to_string(),
+                eng_description: "Power Supply Voltage".to_string(),
                 unit: "V".to_string(),
             },
             DataMapping {
                 data_key: "25".to_string(),
                 chinese_description: "預警".to_string(),
+                eng_description: "Warning".to_string(),
                 unit: "".to_string(),
             },
             DataMapping {
                 data_key: "26".to_string(),
                 chinese_description: "運行狀態".to_string(),
+                eng_description: "Running Status".to_string(),
                 unit: "".to_string(),
             },
             DataMapping {
                 data_key: "27".to_string(),
                 chinese_description: "計時".to_string(),
+                eng_description: "Timing".to_string(),
                 unit: "".to_string(),
             },
             DataMapping {
                 data_key: "28".to_string(),
                 chinese_description: "故障".to_string(),
+                eng_description: "Fault".to_string(),
                 unit: "".to_string(),
             },
             DataMapping {
                 data_key: "32".to_string(),
                 chinese_description: "運轉電壓".to_string(),
+                eng_description: "Operating Voltage".to_string(),
                 unit: "V".to_string(),
             },
             DataMapping {
                 data_key: "33".to_string(),
                 chinese_description: "運轉電流".to_string(),
+                eng_description: "Operating Current".to_string(),
                 unit: "A".to_string(),
             },
             DataMapping {
                 data_key: "34".to_string(),
                 chinese_description: "馬達輸出頻率".to_string(),
+                eng_description: "Motor Output Frequency".to_string(),
                 unit: "Hz".to_string(),
             },
             DataMapping {
                 data_key: "35".to_string(),
                 chinese_description: "當前運轉功率".to_string(),
+                eng_description: "Current Operating Power".to_string(),
                 unit: "kW".to_string(),
             },
             DataMapping {
                 data_key: "36".to_string(),
                 chinese_description: "風機輸出電壓".to_string(),
+                eng_description: "Fan Output Voltage".to_string(),
                 unit: "V".to_string(),
             },
             DataMapping {
                 data_key: "37".to_string(),
                 chinese_description: "風機輸出電流".to_string(),
+                eng_description: "Fan Output Current".to_string(),
                 unit: "A".to_string(),
             },
             DataMapping {
                 data_key: "38".to_string(),
                 chinese_description: "風機輸出頻率".to_string(),
+                eng_description: "Fan Output Frequency".to_string(),
                 unit: "Hz".to_string(),
             },
             DataMapping {
                 data_key: "39".to_string(),
                 chinese_description: "風機輸出功率".to_string(),
+                eng_description: "Fan Output Power".to_string(),
                 unit: "kW".to_string(),
             },
             DataMapping {
                 data_key: "40".to_string(),
                 chinese_description: "主機轉速".to_string(),
+                eng_description: "Main Motor Speed".to_string(),
                 unit: "RPM".to_string(),
             },
             DataMapping {
                 data_key: "41".to_string(),
                 chinese_description: "散熱風扇轉速".to_string(),
+                eng_description: "Cooling Fan Speed".to_string(),
                 unit: "RPM".to_string(),
             },
             DataMapping {
                 data_key: "44".to_string(),
                 chinese_description: "本次運行時間".to_string(),
+                eng_description: "This Run Time".to_string(),
                 unit: "hr".to_string(),
             },
             DataMapping {
                 data_key: "47".to_string(),
                 chinese_description: "本次負載時間".to_string(),
+                eng_description: "This Load Time".to_string(),
                 unit: "hr".to_string(),
             },
             DataMapping {
                 data_key: "61".to_string(),
                 chinese_description: "主機本次用電".to_string(),
+                eng_description: "Main Motor Electricity Consumption (This Run)".to_string(),
                 unit: "kW·h".to_string(),
             },
             DataMapping {
                 data_key: "66".to_string(),
                 chinese_description: "風機本次用電".to_string(),
+                eng_description: "Fan Motor Electricity Consumption (This Run)".to_string(),
                 unit: "kW·h".to_string(),
             },
             DataMapping {
                 data_key: "77".to_string(),
                 chinese_description: "每分鐘流量".to_string(),
+                eng_description: "Flow Rate per Minute".to_string(),
                 unit: "NL".to_string(),
             },
             DataMapping {
                 data_key: "80".to_string(),
                 chinese_description: "累積流量".to_string(),
+                eng_description: "Accumulated Flow".to_string(),
                 unit: "NM³".to_string(),
             },
         ];

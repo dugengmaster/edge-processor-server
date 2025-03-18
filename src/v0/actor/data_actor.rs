@@ -10,7 +10,8 @@ pub enum DataMessage {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SensorData {
-    pub sensor_name: String, // 感測器名稱（中文描述）
+    pub sensor_name_chinese: String, // 感測器名稱（中文描述）
+    pub sensor_name_english: String, // 感測器名稱（英文描述）
     pub value: f64,          // 數值
     pub timestamp: String,   // 時間戳記
     pub unit: String,        // 單位
@@ -62,7 +63,8 @@ impl Actor for DataActor {
                         if let Some(num_value) = extract_number_value(value) {
                             // 創建結構化的傳感器資料，使用預設的單位
                             let sensor_data = SensorData {
-                                sensor_name: mapping.chinese_description.clone(),
+                                sensor_name_chinese: mapping.chinese_description.clone(),
+                                sensor_name_english: mapping.eng_description.clone(),
                                 value: num_value,
                                 timestamp: message.payload.timestamp.clone(),
                                 unit: mapping.unit.clone(),
