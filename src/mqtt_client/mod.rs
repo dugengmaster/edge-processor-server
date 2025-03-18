@@ -5,6 +5,7 @@ pub trait MqttClient {
     fn new(mqttoptions: MqttOptions) -> Self;
     async fn subscribe(&mut self, topic: &str);
     async fn poll(&mut self, callback: impl Fn(RawMessage) + Send + Sync + 'static);
+    async fn publish(&mut self, topic: &str, payload: &[u8]);
 }
 
 #[allow(dead_code)]
