@@ -305,14 +305,14 @@ impl MockDatabase {
             },
             DataMapping {
                 data_key: "25".to_string(),
-                chinese_description: "預警".to_string(),
-                eng_description: "Warning".to_string(),
+                chinese_description: "預警碼".to_string(),
+                eng_description: "Warning code".to_string(),
                 unit: "".to_string(),
             },
             DataMapping {
                 data_key: "26".to_string(),
-                chinese_description: "運行狀態".to_string(),
-                eng_description: "Running Status".to_string(),
+                chinese_description: "運行狀態碼".to_string(),
+                eng_description: "Running Status code".to_string(),
                 unit: "".to_string(),
             },
             DataMapping {
@@ -323,8 +323,8 @@ impl MockDatabase {
             },
             DataMapping {
                 data_key: "28".to_string(),
-                chinese_description: "故障".to_string(),
-                eng_description: "Fault".to_string(),
+                chinese_description: "故障碼".to_string(),
+                eng_description: "Fault code".to_string(),
                 unit: "".to_string(),
             },
             DataMapping {

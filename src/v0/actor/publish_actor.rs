@@ -1,6 +1,6 @@
+use crate::mqtt_client::{rumqtt_client::RumqttClient, MqttClient, MqttOptions};
 use ractor::registry;
 use ractor::{Actor, ActorProcessingErr, ActorRef};
-use crate::mqtt_client::{rumqtt_client::RumqttClient, MqttClient, MqttOptions};
 
 pub enum PublishMessage {
     Message(String),
@@ -18,8 +18,9 @@ impl Actor for PublishActor {
         myself: ActorRef<Self::Msg>,
         args: Self::Arguments,
     ) -> Result<Self::State, ActorProcessingErr> {
-        let mut mqttoptions = MqttOptions::new("IoT_Processor", "60.250.246.123", 1884);
+        let mqttoptions = MqttOptions::new("IoT_Processor", "60.250.246.123", 1884);
         let mut mqtt_client = RumqttClient::new(mqttoptions);
+        mqtt_client.subscribe("DM/skh").await;
 
         Ok(mqtt_client)
     }
@@ -30,7 +31,17 @@ impl Actor for PublishActor {
         message: Self::Msg,
         state: &mut Self::State,
     ) -> Result<(), ActorProcessingErr> {
-        state.publish("DM/processor", message).await;
+        let PublishMessage::Message(message) = message;
+        state.publish("DM/skh", message.as_bytes()).await;
+        state
+            .poll(move |raw_message| {
+                tokio::spawn(async move {
+                    if let Ok(message) = std::str::from_utf8(raw_message.payload) {
+                        println!("[INFO] Message received: {}", message);
+                    }
+                });
+            })
+            .await;
 
         Ok(())
     }
