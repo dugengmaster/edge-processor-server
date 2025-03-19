@@ -47,9 +47,8 @@ impl MqttClient for RumqttClient {
     }
 
     async fn publish(&mut self, topic: &str, payload: &[u8]) {
-        self.client
-            .publish(topic, QoS::AtMostOnce, false, payload)
-            .await
-            .unwrap();
+        if let Err(e) = self.client.publish(topic, QoS::AtLeastOnce, false, payload).await {
+            eprintln!("Failed to publish message: {}", e);
+        }
     }
 }

@@ -1,5 +1,4 @@
 use crate::mqtt_client::{rumqtt_client::RumqttClient, MqttClient, MqttOptions};
-use ractor::registry;
 use ractor::{Actor, ActorProcessingErr, ActorRef};
 
 pub enum PublishMessage {
@@ -31,12 +30,19 @@ impl Actor for PublishActor {
         message: Self::Msg,
         state: &mut Self::State,
     ) -> Result<(), ActorProcessingErr> {
-        let PublishMessage::Message(message) = message;
-        state.publish("DM/skh", message.as_bytes()).await;
+        match message {
+            PublishMessage::Message(message) => {
+                state.publish("DM/skh", message.as_bytes()).await;
+                println!("\npublish done");
+            }
+        }
+
+        // println!("[INFO] Message received: {}", &message);
+
         state
             .poll(move |raw_message| {
                 tokio::spawn(async move {
-                    if let Ok(message) = std::str::from_utf8(raw_message.payload) {
+                    if let Ok(message) = std::str::from_utf8(&raw_message.payload) {
                         println!("[INFO] Message received: {}", message);
                     }
                 });
