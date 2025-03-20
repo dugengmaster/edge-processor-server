@@ -39,15 +39,15 @@ impl Actor for PublishActor {
 
         // println!("[INFO] Message received: {}", &message);
 
-        state
-            .poll(move |raw_message| {
-                tokio::spawn(async move {
-                    if let Ok(message) = std::str::from_utf8(&raw_message.payload) {
-                        println!("[INFO] Message received: {}", message);
-                    }
-                });
-            })
-            .await;
+        // state
+        //     .poll(move |raw_message| {
+        //         tokio::spawn(async move {
+        //             if let Ok(message) = std::str::from_utf8(&raw_message.payload) {
+        //                 println!("[INFO] Message received: {}", message);
+        //             }
+        //         });
+        //     })
+        //     .await;
 
         Ok(())
     }
