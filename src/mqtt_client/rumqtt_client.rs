@@ -2,6 +2,7 @@ use super::{MqttClient, MqttOptions};
 use crate::v0::message_processor::message::RawMessage;
 use rumqttc::{AsyncClient, Event, EventLoop, MqttOptions as RumqttMqttOptions, Packet, QoS};
 use std::time::Duration;
+use std::error::Error;
 
 pub struct RumqttClient {
     client: AsyncClient,
@@ -21,7 +22,7 @@ impl MqttClient for RumqttClient {
             rumqtt_options.set_credentials(username, mqttoptions.password);
         }
 
-        let (client, eventloop) = AsyncClient::new(rumqtt_options, 10);
+        let (mut client, mut eventloop) = AsyncClient::new(rumqtt_options, 5);
         RumqttClient { client, eventloop }
     }
 
@@ -29,7 +30,7 @@ impl MqttClient for RumqttClient {
         self.client.subscribe(topic, QoS::AtMostOnce).await.unwrap();
     }
 
-    // 
+    //
     async fn poll(&mut self, callback: impl Fn(RawMessage) + Send + Sync + 'static) {
         loop {
             match self.eventloop.poll().await {
@@ -46,9 +47,19 @@ impl MqttClient for RumqttClient {
         }
     }
 
-    async fn publish(&mut self, topic: &str, payload: &[u8]) {
-        if let Err(e) = self.client.publish(topic, QoS::AtLeastOnce, false, payload).await {
-            eprintln!("Failed to publish message: {}", e);
+    async fn publish(&mut self, topic: &str, payload: String) -> Result<(), Box<dyn Error>> {
+        match self
+            .client
+            .publish(topic, QoS::AtLeastOnce, false, payload)
+            .await
+        {
+            Ok(_) => {
+                Ok(())
+            }
+            Err(e) => {
+                eprintln!("Failed to publish message: {}", e);
+                Err(Box::new(e)) // 將錯誤封裝在 Box 中
+            }
         }
     }
 }
