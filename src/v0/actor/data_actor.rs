@@ -91,7 +91,6 @@ impl Actor for DataActor {
                         {
                             // 將 JSON 數據發送給 PublishActor
                             let publish_ref: ActorRef<PublishMessage> = publish_actor.into();
-                            println!("message pass to publish actor done");
                             if let Err(e) = publish_ref.cast(PublishMessage::Message(json)) {
                                 println!("[ERROR] Failed to send message to PublishActor: {:?}", e);
                             }
