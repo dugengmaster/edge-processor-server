@@ -3,6 +3,8 @@ use ractor::{Actor, ActorProcessingErr, ActorRef};
 use rumqttc::{AsyncClient, MqttOptions, QoS};
 use std::time::Duration;
 
+use crate::mqtt_client;
+
 pub enum PublishMessage {
     Message(String),
 }
@@ -25,6 +27,8 @@ impl Actor for PublishActor {
 
         let (mqtt_client, _) = AsyncClient::new(mqttoptions, 5);
 
+        let publish_client = mqtt_client.clone();
+
         // let mqttoptions = MqttOptions::new("IoT_Processor", "60.250.246.123", 1884);
         // let mut mqtt_client = RumqttClient::new(mqttoptions);
 
@@ -43,7 +47,7 @@ impl Actor for PublishActor {
         //     }
         // });
 
-        Ok(mqtt_client)
+        Ok(publish_client)
     }
 
     async fn handle(
