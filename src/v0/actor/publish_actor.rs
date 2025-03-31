@@ -1,4 +1,5 @@
 use ractor::{Actor, ActorProcessingErr, ActorRef};
+// use crate::mqtt_client::{MqttClient, MqttOptions, rumqtt_client::RumqttClient};
 use rumqttc::{AsyncClient, MqttOptions, QoS};
 use std::time::Duration;
 use tokio::task;
@@ -12,6 +13,7 @@ pub struct PublishActor;
 impl Actor for PublishActor {
     type Msg = PublishMessage;
     type State = AsyncClient;
+    // type State = RumqttClient;
     type Arguments = ();
 
     async fn pre_start(
@@ -35,6 +37,13 @@ impl Actor for PublishActor {
             }
         });
 
+        // let mqttoptions = MqttOptions::new("mqtt_processor2", "60.250.246.123", 1884);
+        // let mut mqtt_client = RumqttClient::new(mqttoptions);
+
+        // mqtt_client.subscribe("DM/skh").await;
+
+        // mqtt_client.poll().await;
+
         Ok(mqtt_client)
     }
 
@@ -44,7 +53,6 @@ impl Actor for PublishActor {
         message: Self::Msg,
         state: &mut Self::State,
     ) -> Result<(), ActorProcessingErr> {
-        // let publish_client = state.clone();
         match message {
             PublishMessage::Message(message) => {
                 if let Err(e) = state

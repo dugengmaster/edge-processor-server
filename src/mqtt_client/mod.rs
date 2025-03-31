@@ -5,8 +5,9 @@ use std::error::Error;
 pub trait MqttClient {
     fn new(mqttoptions: MqttOptions) -> Self;
     async fn subscribe(&mut self, topic: &str);
-    async fn poll(&mut self, callback: impl Fn(RawMessage) + Send + Sync + 'static);
+    async fn poll(&mut self);
     async fn publish(&mut self, topic: &str, payload: String) -> Result<(), Box<dyn Error>>;
+    fn set_message_hook(&mut self, hook: impl Fn(RawMessage) + Send + Sync + 'static);
 }
 
 #[allow(dead_code)]

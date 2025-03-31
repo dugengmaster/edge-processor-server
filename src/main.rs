@@ -23,25 +23,25 @@ async fn main() {
     Actor::spawn(Some("publish_actor".to_string()), PublishActor, ())
         .await
         .expect("Publish Actor failed to start");
-    
+
     mqtt_client.subscribe("DM/#").await;
 
-    mqtt_client
-        .poll(move |raw_message| {
-            let processor = message_processor.clone();
-            let router = router_actor.clone();
-            tokio::spawn(async move {
-                match processor.message_processor(raw_message) {
-                    Ok(message) => match router.cast(RouterMessage::Message(message)) {
-                        Ok(_) => {}
-                        Err(e) => println!("Failed to send message to router: {:?}", e),
-                    },
-                    Err(err) => {
-                        println!("Error processing message: {:?}", err);
-                        return;
-                    }
+    mqtt_client.set_message_hook(move |raw_message| {
+        let processor = message_processor.clone();
+        let router = router_actor.clone();
+        tokio::spawn(async move {
+            match processor.message_processor(raw_message) {
+                Ok(message) => match router.cast(RouterMessage::Message(message)) {
+                    Ok(_) => {}
+                    Err(e) => println!("Failed to send message to router: {:?}", e),
+                },
+                Err(err) => {
+                    println!("Error processing message: {:?}", err);
+                    return;
                 }
-            });
-        })
-        .await;
+            }
+        });
+    });
+
+    mqtt_client.poll().await;
 }
