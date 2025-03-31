@@ -53,6 +53,7 @@ impl Actor for PublishActor {
         message: Self::Msg,
         state: &mut Self::State,
     ) -> Result<(), ActorProcessingErr> {
+        // let publish_client = state.clone();
         match message {
             PublishMessage::Message(message) => {
                 if let Err(e) = state
