@@ -1,0 +1,6 @@
+version: "3.9"
+services:
+  dolomann-edge-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
