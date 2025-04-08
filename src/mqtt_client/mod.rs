@@ -55,7 +55,7 @@ impl MqttOptions {
             clean_session: true,
             will: None,
             max_packet_size: 65535,
-            connect_timeout: 30,
+            connect_timeout: 60,
             automatic_reconnect: true,
             tls: None,
         }

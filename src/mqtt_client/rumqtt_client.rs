@@ -23,7 +23,7 @@ impl MqttClient for RumqttClient {
             rumqtt_options.set_credentials(username, mqttoptions.password);
         }
 
-        let (client, eventloop) = AsyncClient::new(rumqtt_options, 5);
+        let (client, eventloop) = AsyncClient::new(rumqtt_options, 10);
         RumqttClient {
             client,
             eventloop,
