@@ -34,7 +34,9 @@ impl Actor for PublishActor {
 
         let (mqtt_client, mut eventloop) = AsyncClient::new(mqttoptions, 100);
 
-        let _ = mqtt_client.subscribe("DM/#", QoS::AtLeastOnce).await;
+        let _ = mqtt_client
+            .subscribe(&env::var("MQTT2_TOPIC").expect("MQTT2_TOPIC must be set"), QoS::AtLeastOnce)
+            .await;
 
         task::spawn(async move {
             loop {
@@ -44,13 +46,6 @@ impl Actor for PublishActor {
                 }
             }
         });
-
-        // let mqttoptions = MqttOptions::new("mqtt_processor2", "60.250.246.123", 1884);
-        // let mut mqtt_client = RumqttClient::new(mqttoptions);
-
-        // mqtt_client.subscribe("DM/skh").await;
-
-        // mqtt_client.poll().await;
 
         Ok(mqtt_client)
     }
