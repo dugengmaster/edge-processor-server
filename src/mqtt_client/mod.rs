@@ -1,10 +1,13 @@
 use crate::v0::message_processor::message::RawMessage;
 pub mod rumqtt_client;
+use std::error::Error;
 
 pub trait MqttClient {
     fn new(mqttoptions: MqttOptions) -> Self;
     async fn subscribe(&mut self, topic: &str);
-    async fn poll(&mut self, callback: impl Fn(RawMessage) + Send + Sync + 'static);
+    async fn poll(&mut self);
+    async fn publish(&mut self, topic: &str, payload: String) -> Result<(), Box<dyn Error>>;
+    fn set_message_hook(&mut self, hook: impl Fn(RawMessage) + Send + Sync + 'static);
 }
 
 #[allow(dead_code)]
@@ -52,7 +55,7 @@ impl MqttOptions {
             clean_session: true,
             will: None,
             max_packet_size: 65535,
-            connect_timeout: 30,
+            connect_timeout: 60,
             automatic_reconnect: true,
             tls: None,
         }

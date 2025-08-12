@@ -5,6 +5,7 @@ use serde_json::Value;
 use std::collections::HashMap;
 use std::fmt::Debug;
 
+#[derive(Debug)]
 pub struct RawMessage {
     pub topic: String,
     pub payload: Bytes,
