@@ -1,24 +1,26 @@
-// 模擬資料庫結構
+use serde::{Deserialize, Serialize};
+use std::fs;
+
 #[allow(dead_code)]
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
 pub struct Gateway {
     pub gateway_id: u32,
     pub gateway_macid: String,
 }
 #[allow(dead_code)]
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
 pub struct Brand {
     pub brand_id: u32,
     pub brand_name: String,
 }
 #[allow(dead_code)]
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
 pub struct DeviceType {
     pub device_type_id: u32,
     pub device_type_name: String,
 }
 #[allow(dead_code)]
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
 pub struct Model {
     pub model_id: u32,
     pub model_name: String,
@@ -26,7 +28,7 @@ pub struct Model {
     pub device_type_id: u32,
 }
 #[allow(dead_code)]
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
 pub struct DeviceInfo {
     pub index: u32,
     pub gateway_id: u32,
@@ -34,7 +36,7 @@ pub struct DeviceInfo {
     pub model_id: u32,
 }
 #[allow(dead_code)]
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
 pub struct DataMapping {
     pub data_key: String,
     pub chinese_description: String,
@@ -42,6 +44,7 @@ pub struct DataMapping {
     pub unit: String,            // 新增單位欄位
 }
 #[allow(dead_code)]
+#[derive(Debug, Deserialize)]
 pub struct MockDatabase {
     pub gateways: Vec<Gateway>,
     pub brands: Vec<Brand>,
@@ -53,385 +56,19 @@ pub struct MockDatabase {
 #[allow(dead_code)]
 impl MockDatabase {
     pub fn new() -> Self {
-        let gateways = vec![
-            // Gateway {
-            //     gateway_id: 1,
-            //     gateway_macid: "8CAAB5537EF2".to_string(),
-            // },
-            // Gateway {
-            //     gateway_id: 2,
-            //     gateway_macid: "C8C9A3583898".to_string(),
-            // },
-            Gateway {
-                gateway_id: 3,
-                gateway_macid: "483FDA578E98".to_string(),
-            },
-            // Gateway {
-            //     gateway_id: 4,
-            //     gateway_macid: "A020A624F3E0".to_string(),
-            // },
-            // Gateway {
-            //     gateway_id: 5,
-            //     gateway_macid: "BCFF4DCFDCEA".to_string(),
-            // },
-            // Gateway {
-            //     gateway_id: 6,
-            //     gateway_macid: "D8BFC0192998".to_string(),
-            // },
-            // Gateway {
-            //     gateway_id: 7,
-            //     gateway_macid: "483FDA44DFAF".to_string(),
-            // },
-            // Gateway {
-            //     gateway_id: 8,
-            //     gateway_macid: "BCDDC2568AA4".to_string(),
-            // },
-        ];
-
-        let brands = vec![
-            Brand {
-                brand_id: 1,
-                brand_name: "HITACHI".to_string(),
-            },
-            Brand {
-                brand_id: 2,
-                brand_name: "COMATE".to_string(),
-            },
-            Brand {
-                brand_id: 3,
-                brand_name: "JAGUAR".to_string(),
-            },
-            Brand {
-                brand_id: 4,
-                brand_name: "PARKER".to_string(),
-            },
-        ];
-
-        let device_types = vec![
-            DeviceType {
-                device_type_id: 1,
-                device_type_name: "AirCompressor".to_string(),
-            },
-            DeviceType {
-                device_type_id: 2,
-                device_type_name: "MassFlowMeter".to_string(),
-            },
-            DeviceType {
-                device_type_id: 3,
-                device_type_name: "CompressedAirDryers".to_string(),
-            },
-        ];
-
-        let models = vec![
-            Model {
-                model_id: 1,
-                model_name: "OSP-37M6AN2".to_string(),
-                brand_id: 1,
-                device_type_id: 1,
-            },
-            Model {
-                model_id: 2,
-                model_name: "OSP-37VAG1".to_string(),
-                brand_id: 1,
-                device_type_id: 1,
-            },
-            Model {
-                model_id: 3,
-                model_name: "TGF200".to_string(),
-                brand_id: 2,
-                device_type_id: 2,
-            },
-            Model {
-                model_id: 4,
-                model_name: "ZLS-20Hi+3".to_string(),
-                brand_id: 3,
-                device_type_id: 1,
-            },
-            Model {
-                model_id: 5,
-                model_name: "LM-YED".to_string(),
-                brand_id: 4,
-                device_type_id: 3,
-            },
-        ];
-
-        let data = vec![
-            DeviceInfo {
-                index: 1,
-                gateway_id: 1,
-                slaveid: 1,
-                model_id: 1,
-            },
-            DeviceInfo {
-                index: 2,
-                gateway_id: 2,
-                slaveid: 1,
-                model_id: 2,
-            },
-            DeviceInfo {
-                index: 3,
-                gateway_id: 3,
-                slaveid: 5,
-                model_id: 3,
-            },
-            DeviceInfo {
-                index: 4,
-                gateway_id: 3,
-                slaveid: 1,
-                model_id: 4,
-            },
-            DeviceInfo {
-                index: 5,
-                gateway_id: 5,
-                slaveid: 1,
-                model_id: 5,
-            },
-            DeviceInfo {
-                index: 6,
-                gateway_id: 4,
-                slaveid: 1,
-                model_id: 1,
-            },
-        ];
-
-        let data_mapping = vec![
-            DataMapping {
-                data_key: "0".to_string(),
-                chinese_description: "供氣壓力".to_string(),
-                eng_description: "Discharge Pressure".to_string(),
-                unit: "Mpa".to_string(),
-            },
-            DataMapping {
-                data_key: "1".to_string(),
-                chinese_description: "排氣溫度".to_string(),
-                eng_description: "Discharge Temperature".to_string(),
-                unit: "℃".to_string(),
-            },
-            DataMapping {
-                data_key: "2".to_string(),
-                chinese_description: "運行總時間".to_string(),
-                eng_description: "Total Running Time".to_string(),
-                unit: "hr".to_string(),
-            },
-            DataMapping {
-                data_key: "3".to_string(),
-                chinese_description: "負載總時間".to_string(),
-                eng_description: "Total Load Time".to_string(),
-                unit: "hr".to_string(),
-            },
-            DataMapping {
-                data_key: "4".to_string(),
-                chinese_description: "主機三相電流A".to_string(),
-                eng_description: "Main Motor Phase Current A".to_string(),
-                unit: "A".to_string(),
-            },
-            DataMapping {
-                data_key: "5".to_string(),
-                chinese_description: "主機三相電流B".to_string(),
-                eng_description: "Main Motor Phase Current B".to_string(),
-                unit: "A".to_string(),
-            },
-            DataMapping {
-                data_key: "6".to_string(),
-                chinese_description: "主機三相電流C".to_string(),
-                eng_description: "Main Motor Phase Current C".to_string(),
-                unit: "A".to_string(),
-            },
-            DataMapping {
-                data_key: "10".to_string(),
-                chinese_description: "油濾器使用時間".to_string(),
-                eng_description: "Oil Filter Usage Time".to_string(),
-                unit: "hr".to_string(),
-            },
-            DataMapping {
-                data_key: "11".to_string(),
-                chinese_description: "油分器使用時間".to_string(),
-                eng_description: "Oil Separator Usage Time".to_string(),
-                unit: "hr".to_string(),
-            },
-            DataMapping {
-                data_key: "12".to_string(),
-                chinese_description: "空濾器使用時間".to_string(),
-                eng_description: "Air Filter Usage Time".to_string(),
-                unit: "hr".to_string(),
-            },
-            DataMapping {
-                data_key: "13".to_string(),
-                chinese_description: "潤滑油使用時間".to_string(),
-                eng_description: "Lubricant Usage Time".to_string(),
-                unit: "hr".to_string(),
-            },
-            DataMapping {
-                data_key: "14".to_string(),
-                chinese_description: "潤滑脂使用時間".to_string(),
-                eng_description: "Grease Usage Time".to_string(),
-                unit: "hr".to_string(),
-            },
-            DataMapping {
-                data_key: "17".to_string(),
-                chinese_description: "風機三相電流A".to_string(),
-                eng_description: "Fan Motor Phase Current A".to_string(),
-                unit: "A".to_string(),
-            },
-            DataMapping {
-                data_key: "18".to_string(),
-                chinese_description: "風機三相電流B".to_string(),
-                eng_description: "Fan Motor Phase Current B".to_string(),
-                unit: "A".to_string(),
-            },
-            DataMapping {
-                data_key: "19".to_string(),
-                chinese_description: "風機三相電流C".to_string(),
-                eng_description: "Fan Motor Phase Current C".to_string(),
-                unit: "A".to_string(),
-            },
-            DataMapping {
-                data_key: "22".to_string(),
-                chinese_description: "相序保護電壓".to_string(),
-                eng_description: "Phase Sequence Protection Voltage".to_string(),
-                unit: "V".to_string(),
-            },
-            DataMapping {
-                data_key: "23".to_string(),
-                chinese_description: "缺相保護電壓".to_string(),
-                eng_description: "Phase Loss Protection Voltage".to_string(),
-                unit: "V".to_string(),
-            },
-            DataMapping {
-                data_key: "24".to_string(),
-                chinese_description: "電源電壓".to_string(),
-                eng_description: "Power Supply Voltage".to_string(),
-                unit: "V".to_string(),
-            },
-            DataMapping {
-                data_key: "25".to_string(),
-                chinese_description: "預警碼".to_string(),
-                eng_description: "Warning code".to_string(),
-                unit: "".to_string(),
-            },
-            DataMapping {
-                data_key: "26".to_string(),
-                chinese_description: "運行狀態碼".to_string(),
-                eng_description: "Running Status code".to_string(),
-                unit: "".to_string(),
-            },
-            DataMapping {
-                data_key: "27".to_string(),
-                chinese_description: "計時".to_string(),
-                eng_description: "Timing".to_string(),
-                unit: "".to_string(),
-            },
-            DataMapping {
-                data_key: "28".to_string(),
-                chinese_description: "故障碼".to_string(),
-                eng_description: "Fault code".to_string(),
-                unit: "".to_string(),
-            },
-            DataMapping {
-                data_key: "32".to_string(),
-                chinese_description: "運轉電壓".to_string(),
-                eng_description: "Operating Voltage".to_string(),
-                unit: "V".to_string(),
-            },
-            DataMapping {
-                data_key: "33".to_string(),
-                chinese_description: "運轉電流".to_string(),
-                eng_description: "Operating Current".to_string(),
-                unit: "A".to_string(),
-            },
-            DataMapping {
-                data_key: "34".to_string(),
-                chinese_description: "馬達輸出頻率".to_string(),
-                eng_description: "Motor Output Frequency".to_string(),
-                unit: "Hz".to_string(),
-            },
-            DataMapping {
-                data_key: "35".to_string(),
-                chinese_description: "當前運轉功率".to_string(),
-                eng_description: "Current Operating Power".to_string(),
-                unit: "kW".to_string(),
-            },
-            DataMapping {
-                data_key: "36".to_string(),
-                chinese_description: "風機輸出電壓".to_string(),
-                eng_description: "Fan Output Voltage".to_string(),
-                unit: "V".to_string(),
-            },
-            DataMapping {
-                data_key: "37".to_string(),
-                chinese_description: "風機輸出電流".to_string(),
-                eng_description: "Fan Output Current".to_string(),
-                unit: "A".to_string(),
-            },
-            DataMapping {
-                data_key: "38".to_string(),
-                chinese_description: "風機輸出頻率".to_string(),
-                eng_description: "Fan Output Frequency".to_string(),
-                unit: "Hz".to_string(),
-            },
-            DataMapping {
-                data_key: "39".to_string(),
-                chinese_description: "風機輸出功率".to_string(),
-                eng_description: "Fan Output Power".to_string(),
-                unit: "kW".to_string(),
-            },
-            DataMapping {
-                data_key: "40".to_string(),
-                chinese_description: "主機轉速".to_string(),
-                eng_description: "Main Motor Speed".to_string(),
-                unit: "RPM".to_string(),
-            },
-            DataMapping {
-                data_key: "41".to_string(),
-                chinese_description: "散熱風扇轉速".to_string(),
-                eng_description: "Cooling Fan Speed".to_string(),
-                unit: "RPM".to_string(),
-            },
-            DataMapping {
-                data_key: "44".to_string(),
-                chinese_description: "本次運行時間".to_string(),
-                eng_description: "This Run Time".to_string(),
-                unit: "hr".to_string(),
-            },
-            DataMapping {
-                data_key: "47".to_string(),
-                chinese_description: "本次負載時間".to_string(),
-                eng_description: "This Load Time".to_string(),
-                unit: "hr".to_string(),
-            },
-            DataMapping {
-                data_key: "61".to_string(),
-                chinese_description: "主機本次用電".to_string(),
-                eng_description: "Main Motor Electricity Consumption (This Run)".to_string(),
-                unit: "kW·h".to_string(),
-            },
-            DataMapping {
-                data_key: "66".to_string(),
-                chinese_description: "風機本次用電".to_string(),
-                eng_description: "Fan Motor Electricity Consumption (This Run)".to_string(),
-                unit: "kW·h".to_string(),
-            },
-            DataMapping {
-                data_key: "77".to_string(),
-                chinese_description: "每分鐘流量".to_string(),
-                eng_description: "Flow Rate per Minute".to_string(),
-                unit: "NL".to_string(),
-            },
-            DataMapping {
-                data_key: "80".to_string(),
-                chinese_description: "累積流量".to_string(),
-                eng_description: "Accumulated Flow".to_string(),
-                unit: "NM³".to_string(),
-            },
-        ];
+        if let Ok(json_content) = fs::read_to_string("database.json") {
+            if let Ok(database) = serde_json::from_str::<MockDatabase>(&json_content) {
+                return database;
+            }
+        }
 
         MockDatabase {
-            gateways,
-            brands,
-            device_types,
-            models,
-            data,
-            data_mapping,
+            gateways: vec![],
+            brands: vec![],
+            device_types: vec![],
+            models: vec![],
+            data: vec![],
+            data_mapping: vec![],
         }
     }
 

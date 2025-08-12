@@ -3,14 +3,26 @@ mod v0;
 
 use mqtt_client::{rumqtt_client::RumqttClient, MqttClient, MqttOptions};
 use ractor::actor::Actor;
+use std::env;
 use std::sync::Arc;
 use v0::actor::{data_actor::DataActor, publish_actor::PublishActor, RouterActor, RouterMessage};
 use v0::message_processor::MessageProcessor;
 
 #[tokio::main]
 async fn main() {
-    let mut mqttoptions = MqttOptions::new("IoT_Core", "60.250.246.123", 1883);
-    mqttoptions.set_credentials("dolomannaiot", "q03KHNrJG0wC");
+    dotenvy::dotenv().ok();
+
+    let mut mqttoptions = MqttOptions::new(
+        &env::var("MQTT1_CLIENT_ID").unwrap_or_else(|_| "IoT_Core".to_string()),
+        &env::var("MQTT1_BROKER_HOST").expect("MQTT1_BROKER_HOST must be set"),
+        env::var("MQTT1_BROKER_PORT")
+            .expect("MQTT1_BROKER_PORT must be set")
+            .parse::<u16>().expect("MQTT1_BROKER_PORT must be a valid port number"),
+    );
+    mqttoptions.set_credentials(
+        &env::var("MQTT1_USERNAME").expect("MQTT1_USERNAME must be set"),
+        &env::var("MQTT1_PASSWORD").expect("MQTT1_PASSWORD must be set"),
+    );
 
     let mut mqtt_client = RumqttClient::new(mqttoptions);
     let message_processor = Arc::new(MessageProcessor::new());
@@ -24,7 +36,9 @@ async fn main() {
         .await
         .expect("Publish Actor failed to start");
 
-    mqtt_client.subscribe("DM/#").await;
+    mqtt_client
+        .subscribe(&env::var("MQTT1_TOPIC").expect("MQTT1_TOPIC must be set"))
+        .await;
 
     mqtt_client.set_message_hook(move |raw_message| {
         let processor = message_processor.clone();

@@ -4,7 +4,6 @@ use crate::v0::message_processor::message::{DataPayload, Message as MqttMessage}
 use ractor::{registry, Actor, ActorProcessingErr, ActorRef};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use tracing_subscriber::registry::Data;
 
 pub enum DataMessage {
     Message(MqttMessage<DataPayload>),

@@ -35,6 +35,3 @@ Thumbs.db
 
 # Backups
 *~
-
-/src/v0/gateway_modbus_device.rs
-/src/valhalla

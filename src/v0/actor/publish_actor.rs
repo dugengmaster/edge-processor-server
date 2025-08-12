@@ -1,6 +1,7 @@
 use ractor::{Actor, ActorProcessingErr, ActorRef};
 // use crate::mqtt_client::{MqttClient, MqttOptions, rumqtt_client::RumqttClient};
 use rumqttc::{AsyncClient, MqttOptions, QoS};
+use std::env;
 use std::time::Duration;
 use tokio::task;
 
@@ -21,7 +22,14 @@ impl Actor for PublishActor {
         myself: ActorRef<Self::Msg>,
         args: Self::Arguments,
     ) -> Result<Self::State, ActorProcessingErr> {
-        let mut mqttoptions = MqttOptions::new("mqtt_processor2", "60.250.246.123", 1884);
+        let mut mqttoptions = MqttOptions::new(
+            &env::var("MQTT2_CLIENT_ID").expect("MQTT2_CLIENT_ID must be set"),
+            &env::var("MQTT2_BROKER_HOST").expect("MQTT2_BROKER_HOST must be set"),
+            env::var("MQTT2_BROKER_PORT")
+                .expect("MQTT1_BROKER_PORT must be set")
+                .parse::<u16>()
+                .expect("MQTT2_BROKER_PORT must be set"),
+        );
         mqttoptions.set_keep_alive(Duration::from_secs(60));
 
         let (mqtt_client, mut eventloop) = AsyncClient::new(mqttoptions, 100);
