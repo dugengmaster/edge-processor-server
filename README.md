@@ -55,13 +55,13 @@ cargo run
 
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   IoT Devices   │───▶│   MQTT1 Broker   │───▶│  Edge Server    │
+│   IoT Devices   │───▶│   MQTT1 Broker   │───▶│ Data Processor  │
 │                 │    │  (Input Channel) │    │                 │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
                                                         │
                                                         ▼
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Data Consumer │◀───│   MQTT2 Broker   │◀───│  Data Processor │
+│   Data Consumer │◀───│   MQTT2 Broker   │◀───│ Message Handler │
 │                 │    │ (Output Channel) │    │                 │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
 ```
