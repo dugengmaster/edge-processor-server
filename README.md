@@ -1,11 +1,11 @@
-# Industrial Edge Server
+# IoT Data Processor
 
-A high-performance IoT edge server built with Rust, designed for industrial sensor data processing and MQTT message routing using the Actor pattern.
+A Rust-based IoT data processing service designed for sensor data transformation and MQTT message handling using the Actor pattern.
 
 ## 🚀 Features
 
-- **Dual MQTT Broker Support**: Separate brokers for data ingestion and publishing
-- **Real-time Data Processing**: Transforms raw sensor data into structured JSON format
+- **MQTT Data Processing**: Receives, processes, and republishes sensor data
+- **Real-time Data Transformation**: Converts raw sensor data into structured JSON format
 - **Device Registration Validation**: Ensures only registered devices can send data
 - **Multi-language Support**: Chinese and English descriptions with units
 - **Actor-based Architecture**: Concurrent message processing using Ractor
