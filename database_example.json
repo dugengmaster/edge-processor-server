@@ -1,0 +1,124 @@
+{
+  "gateways": [
+    {
+      "gateway_id": 1,
+      "gateway_macid": "AA:BB:CC:DD:EE:FF"
+    },
+    {
+      "gateway_id": 2,
+      "gateway_macid": "11:22:33:44:55:66"
+    }
+  ],
+  "brands": [
+    {
+      "brand_id": 1,
+      "brand_name": "BRAND_A"
+    },
+    {
+      "brand_id": 2,
+      "brand_name": "BRAND_B"
+    },
+    {
+      "brand_id": 3,
+      "brand_name": "BRAND_C"
+    }
+  ],
+  "device_types": [
+    {
+      "device_type_id": 1,
+      "device_type_name": "DeviceType1"
+    },
+    {
+      "device_type_id": 2,
+      "device_type_name": "DeviceType2"
+    },
+    {
+      "device_type_id": 3,
+      "device_type_name": "DeviceType3"
+    }
+  ],
+  "models": [
+    {
+      "model_id": 1,
+      "model_name": "MODEL_X1",
+      "brand_id": 1,
+      "device_type_id": 1
+    },
+    {
+      "model_id": 2,
+      "model_name": "MODEL_Y2",
+      "brand_id": 1,
+      "device_type_id": 1
+    },
+    {
+      "model_id": 3,
+      "model_name": "MODEL_Z3",
+      "brand_id": 2,
+      "device_type_id": 2
+    },
+    {
+      "model_id": 4,
+      "model_name": "MODEL_A4",
+      "brand_id": 3,
+      "device_type_id": 1
+    },
+    {
+      "model_id": 5,
+      "model_name": "MODEL_B5",
+      "brand_id": 3,
+      "device_type_id": 3
+    }
+  ],
+  "devices": [
+    {
+      "index": 1,
+      "gateway_id": 1,
+      "slaveid": 1,
+      "model_id": 1
+    },
+    {
+      "index": 2,
+      "gateway_id": 1,
+      "slaveid": 2,
+      "model_id": 2
+    },
+    {
+      "index": 3,
+      "gateway_id": 2,
+      "slaveid": 1,
+      "model_id": 3
+    },
+    {
+      "index": 4,
+      "gateway_id": 2,
+      "slaveid": 2,
+      "model_id": 4
+    }
+  ],
+  "data_mapping": [
+    {
+      "data_key": "param_01",
+      "chinese_description": "溫度",
+      "eng_description": "Temperature",
+      "unit": "°C"
+    },
+    {
+      "data_key": "param_02",
+      "chinese_description": "壓力",
+      "eng_description": "Pressure",
+      "unit": "kPa"
+    },
+    {
+      "data_key": "param_03",
+      "chinese_description": "電壓",
+      "eng_description": "Voltage",
+      "unit": "V"
+    },
+    {
+      "data_key": "status_01",
+      "chinese_description": "運行狀態",
+      "eng_description": "Running Status",
+      "unit": ""
+    }
+  ]
+}

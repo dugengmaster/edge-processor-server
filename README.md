@@ -32,27 +32,18 @@ cargo build
 ```
 
 3. **Set up environment variables**
-Create a `.env` file in the project root:
-```env
-# MQTT1 Broker Configuration (Input Channel)
-MQTT1_CLIENT_ID=your_client_id
-MQTT1_BROKER_HOST=your_broker_host
-MQTT1_BROKER_PORT=your_port
-MQTT1_USERNAME=your_username
-MQTT1_PASSWORD=your_password
-MQTT1_TOPIC=your_topic
-
-# MQTT2 Broker Configuration (Output Channel)
-MQTT2_CLIENT_ID=your_client_id
-MQTT2_BROKER_HOST=your_broker_host
-MQTT2_BROKER_PORT=your_port
-MQTT2_USERNAME=your_username
-MQTT2_PASSWORD=your_password
-MQTT2_TOPIC=your_topic
+Copy the example environment file and customize it:
+```bash
+cp .env.example .env
 ```
+Then edit `.env` with your actual configuration values.
 
 4. **Configure device database**
-Place your `database.json` file in the project root. See [Database Configuration](#-database-configuration) for format details.
+Copy the example database file and customize it:
+```bash
+cp database_example.json database.json
+```
+Then edit `database.json` with your actual device information. See [Database Configuration](#-database-configuration) for format details.
 
 ## 🏃‍♂️ Running
 
@@ -90,7 +81,7 @@ cargo run
 
 ## 📁 Database Configuration
 
-Create a `database.json` file with the following structure:
+The `database.json` file defines your device topology and sensor mappings. Use the provided `database_example.json` as a template.
 
 ```json
 {
@@ -183,6 +174,8 @@ src/
 │   ├── message_processor/ # Message parsing and validation
 │   ├── gateway_modbus_device.rs # Database models
 │   └── device_model.rs    # Device query interface
+├── .env.example           # Environment variables template
+└── database_example.json  # Database configuration template
 ```
 
 ### Key Dependencies

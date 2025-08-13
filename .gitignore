@@ -28,7 +28,7 @@ Thumbs.db
 
 # Generated data files
 *.csv
-*.json
+database.json
 
 # Other lock files
 *.lock
