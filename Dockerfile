@@ -15,4 +15,4 @@ RUN cargo build --release && \
     rm -rf /app/src /app/target
 
 # 設定執行命令
-CMD ["./dolomann-edge-server"]
+CMD ["./iot-processor-server"]
